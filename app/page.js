@@ -39,8 +39,13 @@ export default async function Home() {
     <main>
       <h1>Warehouse Bin Map</h1>
       <p className="subtitle">
-        Live from Google Sheets — last checked {new Date(data.generatedAt).toLocaleString()}.
-        Refreshes automatically about once a minute.
+        Live from Google Sheets — last checked{" "}
+        {new Date(data.generatedAt).toLocaleString("en-US", {
+          timeZone: "America/Chicago",
+          dateStyle: "short",
+          timeStyle: "medium",
+        })}{" "}
+        CT. Refreshes automatically about once a minute.
       </p>
 
       <div className="stats">
