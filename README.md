@@ -55,23 +55,29 @@ sheet's URL (the long string between `/d/` and `/edit`).
 
 ## Password-protecting the site
 
-This app includes its own login gate (`middleware.js`) so it isn't publicly
-accessible — Vercel's built-in Password Protection requires a paid add-on, so this
-does the same job for free.
+This app includes its own login page (`app/login`, `app/api/login`, `middleware.js`)
+so it isn't publicly accessible — Vercel's built-in Password Protection requires a
+paid add-on, so this does the same job for free. It uses a real login page with a
+signed cookie rather than the browser's native HTTP Basic Auth popup, since that
+popup is unreliable on mobile — some phone browsers (especially in-app browsers
+opened from Messages/Slack/etc.) fail to render it at all, leaving a blank screen.
 
 To turn it on:
 
 1. In Vercel: **Project Settings → Environment Variables**.
-2. Add two variables (for the **Production** environment):
+2. Add these (for the **Production** environment):
    - `SITE_USERNAME`
    - `SITE_PASSWORD`
+   - `AUTH_SECRET` — optional but recommended: any long random string, used to
+     sign the login cookie. If omitted, `SITE_PASSWORD` is used instead.
 3. Redeploy (Vercel → Deployments → click the latest → **Redeploy**), since env var
    changes need a fresh deployment to take effect.
 
-Once set, visiting the site will prompt for a username/password (a standard browser
-login popup). Share those credentials only with people who should have access.
-Leaving either variable unset leaves the site open — useful for local development,
-but make sure both are set in Vercel itself.
+Once set, visiting any page redirects to `/login` until the right username/password
+is entered. The session is remembered for 30 days via a cookie (httpOnly, secure).
+Share those credentials only with people who should have access. Leaving
+`SITE_USERNAME`/`SITE_PASSWORD` unset leaves the site open — useful for local
+development, but make sure both are set in Vercel itself.
 
 ### The Google Sheet is a separate exposure
 
