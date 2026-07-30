@@ -72,6 +72,23 @@ export default async function Home() {
       </div>
 
       <BinMap data={data} />
+
+      {data.actionItems && data.actionItems.length > 0 && (
+        <div className="action-items">
+          <div className="action-items-title">
+            Action items — {data.actionItems.length} unverified transfer
+            {data.actionItems.length === 1 ? "" : "s"}
+          </div>
+          {data.actionItems.map((item, i) => (
+            <div className="action-item-row" key={i}>
+              <span className="action-item-loc">{item.location}</span>
+              {item.brand && <span className="brand-tag" style={{ background: data.brandColors[item.brand] || "#999" }}>{item.brand}</span>}
+              LP {item.licensePlate} — {item.sku} · {item.description} · qty {item.qty}
+              <div className="action-note">Action: {item.notes || "No note provided — check with whoever logged this transfer."}</div>
+            </div>
+          ))}
+        </div>
+      )}
     </main>
   );
 }

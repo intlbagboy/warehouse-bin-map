@@ -7,6 +7,8 @@ export default function BinMap({ data }) {
 
   const locations = data.locations;
   const aisles = data.aisles;
+  const brandColors = data.brandColors || {};
+  const brands = Object.keys(brandColors);
 
   return (
     <>
@@ -29,6 +31,20 @@ export default function BinMap({ data }) {
         </span>
       </div>
 
+      {brands.length > 0 && (
+        <div className="legend brand-legend">
+          <span className="muted" style={{ marginRight: 4 }}>
+            Brand (top stripe):
+          </span>
+          {brands.map((b) => (
+            <span key={b}>
+              <span className="legend-swatch" style={{ background: brandColors[b] }} />
+              {b}
+            </span>
+          ))}
+        </div>
+      )}
+
       {aisles.map((aisle) => (
         <div className="aisle-block" key={aisle.code}>
           <div className="aisle-title">Aisle {aisle.code}</div>
@@ -47,13 +63,15 @@ export default function BinMap({ data }) {
               <div className="level-label">L{level}</div>
               {Array.from({ length: aisle.spots }, (_, i) => i + 1).map((spot) => {
                 const code = `${aisle.code}-${String(spot).padStart(2, "0")}-${level}`;
-                const loc = locations[code] || { status: "empty", entries: [], qty: 0 };
+                const loc = locations[code] || { status: "empty", entries: [], qty: 0, brand: "" };
+                const brandColor = loc.brand ? brandColors[loc.brand] : null;
                 return (
                   <div
                     key={code}
                     className={`cell ${loc.status}`}
                     onClick={() => loc.status !== "blocked" && setSelected(code)}
-                    title={code}
+                    title={loc.brand ? `${code} — ${loc.brand}` : code}
+                    style={brandColor ? { borderTop: `3px solid ${brandColor}` } : undefined}
                   >
                     {loc.status === "blocked" ? "" : loc.qty > 0 ? loc.qty : ""}
                   </div>
@@ -74,8 +92,21 @@ export default function BinMap({ data }) {
             }
             return loc.entries.map((e, i) => (
               <div className="entry-row" key={i}>
-                LP {e.licensePlate} — {e.sku} · {e.description} · qty {e.qty}
-                {!e.verified && <span className="not-verified">NOT VERIFIED</span>}
+                <div>
+                  {e.brand && (
+                    <span
+                      className="brand-tag"
+                      style={{ background: brandColors[e.brand] || "#999" }}
+                    >
+                      {e.brand}
+                    </span>
+                  )}
+                  LP {e.licensePlate} — {e.sku} · {e.description} · qty {e.qty}
+                  {!e.verified && <span className="not-verified">NOT VERIFIED</span>}
+                </div>
+                {!e.verified && e.notes && (
+                  <div className="action-note">Action: {e.notes}</div>
+                )}
               </div>
             ));
           })()}
