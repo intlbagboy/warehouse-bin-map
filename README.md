@@ -3,6 +3,8 @@
 A live, color-coded map of the warehouse relocation tracker: occupied, needs-review,
 blocked, and empty bins, with click-through detail (license plate, SKU, item, qty).
 
+Data now comes live from a Google Sheet — no manual export/regenerate step needed.
+
 ## First-time setup
 
 1. Install [Node.js](https://nodejs.org) (v18+).
@@ -16,44 +18,60 @@ blocked, and empty bins, with click-through detail (license plate, SKU, item, qt
    ```
    Open http://localhost:3000
 
-## Updating the data
+## Required: make the Google Sheet publicly viewable
 
-Whenever you update the Excel tracker:
+This app reads the sheet anonymously (no Google API key/login), so the sheet must be
+shared as **"Anyone with the link – Viewer"**:
 
-```
-python3 scripts/export_data.py /path/to/Warehouse_Relocation_Tracker.xlsx
-```
+1. Open the Google Sheet.
+2. Click **Share** (top right).
+3. Under "General access," change from "Restricted" to **"Anyone with the link."**
+4. Make sure the role is **Viewer**.
 
-This regenerates `data/locations.json` from the Aisle List, Transfer Log, and Spots
-Blocked by Beams tabs. Commit and push the updated JSON file to redeploy the site
-with fresh data — no rebuild of the app itself is needed.
+Without this, the app will show a "Couldn't load live data" error (you'll see a 403 in
+the underlying fetch).
 
-Requires `openpyxl`: `pip install openpyxl`
+## How the live data works
+
+`lib/sheetData.js` fetches three tabs from the sheet as CSV (no API key required, since
+Google Sheets supports anonymous CSV export for publicly-viewable sheets):
+
+- **Aisle List** — which aisles exist
+- **Transfer Log** — every license plate → location transfer, with verified Y/N
+- **Spots Blocked by Beams** — which spots are physically unusable
+
+It reconstructs the exact same status logic as the old Excel tracker: a location is
+`blocked`, `empty`, `occupied`, or `review` (occupied but has an unverified entry).
+
+The page re-fetches the sheet at most once a minute (`revalidate: 60`), so edits in
+Google Sheets show up live without a redeploy.
+
+If you rename the Google Sheet's tabs, update the tab names in `lib/sheetData.js`
+(`fetchTab("Aisle List")`, etc.) to match.
+
+To point this at a different spreadsheet, set the `GOOGLE_SHEET_ID` environment
+variable in Vercel (Project Settings → Environment Variables) to the ID from the
+sheet's URL (the long string between `/d/` and `/edit`).
 
 ## Deploying to Vercel
 
-1. Push this folder to a new GitHub repo.
+1. Push this repo to GitHub (already done if you're reading this from the repo).
 2. Go to [vercel.com](https://vercel.com), click **Add New → Project**, and import
    the repo.
 3. Leave the default settings (Vercel auto-detects Next.js) and click **Deploy**.
-4. Every time you push an updated `data/locations.json` to the repo, Vercel
-   redeploys automatically with the new data.
+4. Every minute, the live page re-checks the Google Sheet — no redeploy needed to see
+   new data. You only need to redeploy if you change the code itself.
 
 ## Project structure
 
 ```
-app/page.js            Main page — loads data/locations.json, shows stats + map
-components/BinMap.js   Interactive grid (client component)
-data/locations.json    Generated snapshot of the tracker — do not hand-edit
-scripts/export_data.py Regenerates data/locations.json from the Excel workbook
+app/page.js             Main page — fetches live sheet data, shows stats + map
+lib/sheetData.js         Fetches + parses the Google Sheet tabs into the app's data shape
+components/BinMap.js     Interactive grid (client component)
+data/locations.json      Legacy static snapshot — no longer used by the live app
+scripts/export_data.py   Legacy: regenerates data/locations.json from the Excel file
+                          (only needed if you ever revert to the static-file approach)
 ```
-
-## Roadmap ideas
-
-- Swap the static JSON for a live source (Google Sheets, or a daily NetSuite
-  saved-search export) so the site updates without a manual regenerate/push step.
-- Add a search-by-license-plate box.
-- Add per-aisle filtering once more aisles are in the tracker.
 
 ## Note on `npm audit`
 

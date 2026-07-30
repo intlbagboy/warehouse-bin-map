@@ -1,5 +1,7 @@
-import data from "../data/locations.json";
+import { getWarehouseData } from "../lib/sheetData";
 import BinMap from "../components/BinMap";
+
+export const revalidate = 60; // re-fetch the sheet at most once a minute
 
 function computeStats(data) {
   const values = Object.values(data.locations);
@@ -12,7 +14,24 @@ function computeStats(data) {
   return { total, blocked, usable, occupied, review, empty };
 }
 
-export default function Home() {
+export default async function Home() {
+  let data;
+  let error;
+  try {
+    data = await getWarehouseData();
+  } catch (e) {
+    error = e.message;
+  }
+
+  if (error) {
+    return (
+      <main>
+        <h1>Warehouse Bin Map</h1>
+        <p className="subtitle">Couldn&apos;t load live data: {error}</p>
+      </main>
+    );
+  }
+
   const stats = computeStats(data);
   const pctComplete = stats.usable > 0 ? ((stats.occupied + stats.review) / stats.usable) * 100 : 0;
 
@@ -20,8 +39,8 @@ export default function Home() {
     <main>
       <h1>Warehouse Bin Map</h1>
       <p className="subtitle">
-        Data as of {new Date(data.generatedAt).toLocaleString()} — regenerate with
-        scripts/export_data.py after updating the tracker.
+        Live from Google Sheets — last checked {new Date(data.generatedAt).toLocaleString()}.
+        Refreshes automatically about once a minute.
       </p>
 
       <div className="stats">
