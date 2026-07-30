@@ -1,0 +1,1093 @@
+{
+  "generatedAt": "2026-07-30T18:48:30",
+  "aisles": [
+    {
+      "code": "3A",
+      "spots": 22,
+      "levels": 4
+    }
+  ],
+  "locations": {
+    "3A-01-1": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-40",
+          "sku": "EBB2004-316",
+          "description": "Stowaway 45L Duffel - Spruce",
+          "qty": 80,
+          "uom": "EA",
+          "transferredBy": "?",
+          "verified": true
+        },
+        {
+          "licensePlate": "H-39",
+          "sku": "EBB2004-316",
+          "description": "Stowaway 45L Duffel - Spruce",
+          "qty": 300,
+          "uom": "EA",
+          "transferredBy": "?",
+          "verified": true
+        },
+        {
+          "licensePlate": "H-41",
+          "sku": "EBB2004-316",
+          "description": "Stowaway 45L Duffel - Spruce",
+          "qty": 40,
+          "uom": "EA",
+          "transferredBy": "?",
+          "verified": true
+        }
+      ],
+      "qty": 420
+    },
+    "3A-01-2": {
+      "status": "review",
+      "entries": [
+        {
+          "licensePlate": "H-41",
+          "sku": "EBB2004-316",
+          "description": "Stowaway 45L Duffel - Spruce",
+          "qty": 380,
+          "uom": "EA",
+          "transferredBy": "?",
+          "verified": false
+        }
+      ],
+      "qty": 380
+    },
+    "3A-01-3": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-40",
+          "sku": "EBB2004-316",
+          "description": "Stowaway 45L Duffel - Spruce",
+          "qty": 460,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 460
+    },
+    "3A-01-4": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-02-1": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-02-2": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-39",
+          "sku": "EBB2004-316",
+          "description": "Stowaway 45L Duffel - Spruce",
+          "qty": 500,
+          "uom": "EA",
+          "transferredBy": "?",
+          "verified": true
+        }
+      ],
+      "qty": 500
+    },
+    "3A-02-3": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-40",
+          "sku": "EBB2004-316",
+          "description": "Stowaway 45L Duffel - Spruce",
+          "qty": 480,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        },
+        {
+          "licensePlate": "H-41",
+          "sku": "EBB2004-316",
+          "description": "Stowaway 45L Duffel - Spruce",
+          "qty": 20,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 500
+    },
+    "3A-02-4": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-03-1": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-01",
+          "sku": "EBB2004-031",
+          "description": "Stowaway 45L Duffel - Onyx",
+          "qty": 500,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 500
+    },
+    "3A-03-2": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "S-06",
+          "sku": "EBB3003-031",
+          "description": "Stowaway Packable Daypack 30L - Onyx",
+          "qty": 285,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        },
+        {
+          "licensePlate": "H-34",
+          "sku": "EBB2004-031",
+          "description": "Stowaway 45L Duffel - Onyx",
+          "qty": 100,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        },
+        {
+          "licensePlate": "H-01",
+          "sku": "EBB2004-031",
+          "description": "Stowaway 45L Duffel - Onyx",
+          "qty": 20,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 405
+    },
+    "3A-03-3": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-03-4": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-04-1": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-04-2": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-34",
+          "sku": "EBB2004-031",
+          "description": "Stowaway 45L Duffel - Onyx",
+          "qty": 497,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 497
+    },
+    "3A-04-3": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-04-4": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-05-1": {
+      "status": "blocked",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-05-2": {
+      "status": "blocked",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-05-3": {
+      "status": "blocked",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-05-4": {
+      "status": "blocked",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-06-1": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-22",
+          "sku": "EBB2004-337",
+          "description": "Stowaway 45L Duffel - Sprig",
+          "qty": 100,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        },
+        {
+          "licensePlate": "H-27",
+          "sku": "EBB2004-044",
+          "description": "Stowaway 45L Duffel - Dark Smoke",
+          "qty": 320,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 420
+    },
+    "3A-06-2": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-10",
+          "sku": "EBB2004-044",
+          "description": "Stowaway 45L Duffel - Dark Smoke",
+          "qty": 460,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        },
+        {
+          "licensePlate": "H-27",
+          "sku": "EBB2004-044",
+          "description": "Stowaway 45L Duffel - Dark Smoke",
+          "qty": 40,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 500
+    },
+    "3A-06-3": {
+      "status": "review",
+      "entries": [
+        {
+          "licensePlate": "UNKNOWN",
+          "sku": "EBB2004-044",
+          "description": "Stowaway 45L Duffel - Dark Smoke",
+          "qty": 500,
+          "uom": "EA",
+          "transferredBy": "N/A",
+          "verified": false
+        }
+      ],
+      "qty": 500
+    },
+    "3A-06-4": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-07-1": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "S-23",
+          "sku": "EBB2004-552",
+          "description": "Stowaway 45L Duffel - Blue Fog",
+          "qty": 520,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 520
+    },
+    "3A-07-2": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-03",
+          "sku": "EBB2004-539",
+          "description": "Stowaway 45L Duffel - Port",
+          "qty": 440,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 440
+    },
+    "3A-07-3": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-07-4": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-08-1": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "S-15",
+          "sku": "EBB2004-456",
+          "description": "Stowaway 45L Duffel - Coast",
+          "qty": 99,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 99
+    },
+    "3A-08-2": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "S-20",
+          "sku": "EBB2004-692",
+          "description": "Stowaway 45L Duffel - Black Cherry",
+          "qty": 360,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 360
+    },
+    "3A-08-3": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-08-4": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-09-1": {
+      "status": "review",
+      "entries": [
+        {
+          "licensePlate": "H-15",
+          "sku": "EBB2004-541",
+          "description": "Stowaway 45L Duffel - Lilac",
+          "qty": 259,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        },
+        {
+          "licensePlate": "UNKNOWN",
+          "sku": "EBB2004-044",
+          "description": "Stowaway 45L Duffel - Dark Smoke",
+          "qty": 100,
+          "uom": "EA",
+          "transferredBy": "N/A",
+          "verified": false
+        }
+      ],
+      "qty": 359
+    },
+    "3A-09-2": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "S-22",
+          "sku": "EBB2004-395",
+          "description": "Stowaway 45L Duffel - Irish Moss",
+          "qty": 240,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 240
+    },
+    "3A-09-3": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-09-4": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-10-1": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "S-35",
+          "sku": "EBB2004-987",
+          "description": "Stowaway 45L Duffel - Tile Blue",
+          "qty": 160,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 160
+    },
+    "3A-10-2": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "S-19",
+          "sku": "EBB2004-387",
+          "description": "Stowaway 45L Duffel - Dark Forest",
+          "qty": 500,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 500
+    },
+    "3A-10-3": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-10-4": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-11-1": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-24",
+          "sku": "EBB2004-337",
+          "description": "Stowaway 45L Duffel - Sprig",
+          "qty": 359,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 359
+    },
+    "3A-11-2": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-22",
+          "sku": "EBB2004-337",
+          "description": "Stowaway 45L Duffel - Sprig",
+          "qty": 500,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 500
+    },
+    "3A-11-3": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-11-4": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-12-1": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "CH-319",
+          "sku": "EBB3002-337",
+          "description": "Stowaway Packable 25L Cinch Tote - Sprig",
+          "qty": 500,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        },
+        {
+          "licensePlate": "CH-319",
+          "sku": "EBB3005-337",
+          "description": "Stowaway Convertible Packable Waistpack",
+          "qty": 320,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        },
+        {
+          "licensePlate": "CH-319",
+          "sku": "EBB2004-337",
+          "description": "Stowaway 45L Duffel - Sprig",
+          "qty": 100,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 920
+    },
+    "3A-12-2": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-23",
+          "sku": "EBB2004-337",
+          "description": "Stowaway 45L Duffel - Sprig",
+          "qty": 500,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 500
+    },
+    "3A-12-3": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-12-4": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-13-1": {
+      "status": "blocked",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-13-2": {
+      "status": "blocked",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-13-3": {
+      "status": "blocked",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-13-4": {
+      "status": "blocked",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-14-1": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-37",
+          "sku": "EBB2004-284",
+          "description": "Stowaway 45L Duffel - Tobacco",
+          "qty": 280,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        },
+        {
+          "licensePlate": "H-11",
+          "sku": "EBB2004-284",
+          "description": "Stowaway 45L Duffel - Tobacco",
+          "qty": 100,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 380
+    },
+    "3A-14-2": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-37",
+          "sku": "EBB2004-284",
+          "description": "Stowaway 45L Duffel - Tobacco",
+          "qty": 498,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 498
+    },
+    "3A-14-3": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-11",
+          "sku": "EBB2004-284",
+          "description": "Stowaway 45L Duffel - Tobacco",
+          "qty": 500,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 500
+    },
+    "3A-14-4": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-15-1": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-19",
+          "sku": "EBB2004-375",
+          "description": "Stowaway 45L Duffel - Dark Loden",
+          "qty": 239,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 239
+    },
+    "3A-15-2": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "S-24",
+          "sku": "EBB2004-375",
+          "description": "Stowaway 45L Duffel - Dark Loden",
+          "qty": 500,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 500
+    },
+    "3A-15-3": {
+      "status": "review",
+      "entries": [
+        {
+          "licensePlate": "UNKNOWN",
+          "sku": "EBB2004-380",
+          "description": "Stowaway 45L Duffel - Deep Sea",
+          "qty": 500,
+          "uom": "EA",
+          "transferredBy": "N/A",
+          "verified": false
+        }
+      ],
+      "qty": 500
+    },
+    "3A-15-4": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-16-1": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "S-24",
+          "sku": "EBB2004-375",
+          "description": "Stowaway 45L Duffel - Dark Loden",
+          "qty": 140,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        },
+        {
+          "licensePlate": "H-05",
+          "sku": "EBB2004-380",
+          "description": "Stowaway 45L Duffel - Deep Sea",
+          "qty": 200,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 340
+    },
+    "3A-16-2": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-04",
+          "sku": "EBB2004-380",
+          "description": "Stowaway 45L Duffel - Deep Sea",
+          "qty": 500,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 500
+    },
+    "3A-16-3": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-04",
+          "sku": "EBB2004-380",
+          "description": "Stowaway 45L Duffel - Deep Sea",
+          "qty": 480,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 480
+    },
+    "3A-16-4": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-17-1": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "CH-320",
+          "sku": "EBB2004-652",
+          "description": "Stowaway 45L Duffel - Maroon",
+          "qty": 338,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        },
+        {
+          "licensePlate": "CH-320",
+          "sku": "EBB2004-316",
+          "description": "Stowaway 45L Duffel - Spruce",
+          "qty": 30,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 368
+    },
+    "3A-17-2": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-35",
+          "sku": "EBB3001-044",
+          "description": "Stowaway Packable 20L Daypack - Dark Smoke",
+          "qty": 240,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        },
+        {
+          "licensePlate": "H-30",
+          "sku": "EBB3001-044",
+          "description": "Stowaway Packable 20L Daypack - Dark Smoke",
+          "qty": 40,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 280
+    },
+    "3A-17-3": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-30",
+          "sku": "EBB3001-044",
+          "description": "Stowaway Packable 20L Daypack - Dark Smoke",
+          "qty": 200,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        },
+        {
+          "licensePlate": "S-04",
+          "sku": "EBB3001-316",
+          "description": "Stowaway Packable 20L Daypack - Spruce",
+          "qty": 400,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 600
+    },
+    "3A-17-4": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-18-1": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-35",
+          "sku": "EBB3001-044",
+          "description": "Stowaway Packable 20L Daypack - Dark Smoke",
+          "qty": 360,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 360
+    },
+    "3A-18-2": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-35",
+          "sku": "EBB3001-044",
+          "description": "Stowaway Packable 20L Daypack - Dark Smoke",
+          "qty": 576,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 576
+    },
+    "3A-18-3": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-30",
+          "sku": "EBB3001-044",
+          "description": "Stowaway Packable 20L Daypack - Dark Smoke",
+          "qty": 600,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 600
+    },
+    "3A-18-4": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-19-1": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "S-25",
+          "sku": "EBB3001-375",
+          "description": "Stowaway Packable 20L Daypack - Dark Loden",
+          "qty": 400,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        },
+        {
+          "licensePlate": "S-12",
+          "sku": "EBB3001-284",
+          "description": "Stowaway Packable 20L Daypack - Tobacco",
+          "qty": 200,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 600
+    },
+    "3A-19-2": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "S-18",
+          "sku": "EBB3001-375",
+          "description": "Stowaway Packable 20L Daypack - Dark Loden",
+          "qty": 600,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 600
+    },
+    "3A-19-3": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "S-25",
+          "sku": "EBB3001-375",
+          "description": "Stowaway Packable 20L Daypack - Dark Loden",
+          "qty": 600,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 600
+    },
+    "3A-19-4": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-20-1": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "S-07",
+          "sku": "EBB3001-387",
+          "description": "Stowaway Packable 20L Daypack - Dark Forest",
+          "qty": 519,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 519
+    },
+    "3A-20-2": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "S-04",
+          "sku": "EBB3001-316",
+          "description": "Stowaway Packable 20L Daypack - Spruce",
+          "qty": 520,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 520
+    },
+    "3A-20-3": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "S-03",
+          "sku": "EBB3001-316",
+          "description": "Stowaway Packable 20L Daypack - Spruce",
+          "qty": 600,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 600
+    },
+    "3A-20-4": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-21-1": {
+      "status": "blocked",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-21-2": {
+      "status": "blocked",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-21-3": {
+      "status": "blocked",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-21-4": {
+      "status": "blocked",
+      "entries": [],
+      "qty": 0
+    },
+    "3A-22-1": {
+      "status": "review",
+      "entries": [
+        {
+          "licensePlate": "S-18",
+          "sku": "EBB3001-375",
+          "description": "Stowaway Packable 20L Daypack - Dark Loden",
+          "qty": 280,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        },
+        {
+          "licensePlate": "S-12",
+          "sku": "EBB3001-284",
+          "description": "Stowaway Packable 20L Daypack - Tobacco",
+          "qty": 80,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        },
+        {
+          "licensePlate": "S-09",
+          "sku": "EBB3001-744",
+          "description": "Stowaway Packable 20L Daypack - Field Gold",
+          "qty": 160,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        },
+        {
+          "licensePlate": "UNKNOWN",
+          "sku": "EBB3001-692",
+          "description": "Stowaway Packable 20L Daypack - Black Cherry",
+          "qty": 120,
+          "uom": "EA",
+          "transferredBy": "N/A",
+          "verified": false
+        }
+      ],
+      "qty": 640
+    },
+    "3A-22-2": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "S-02",
+          "sku": "EBB3001-692",
+          "description": "Stowaway Packable 20L Daypack - Black Cherry",
+          "qty": 400,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 400
+    },
+    "3A-22-3": {
+      "status": "occupied",
+      "entries": [
+        {
+          "licensePlate": "H-36",
+          "sku": "EBB3001-380",
+          "description": "Stowaway Packable 20L Daypack - Deep Sea",
+          "qty": 600,
+          "uom": "EA",
+          "transferredBy": "Teddy",
+          "verified": true
+        }
+      ],
+      "qty": 600
+    },
+    "3A-22-4": {
+      "status": "empty",
+      "entries": [],
+      "qty": 0
+    }
+  }
+}
