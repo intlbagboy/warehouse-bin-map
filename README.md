@@ -53,6 +53,37 @@ To point this at a different spreadsheet, set the `GOOGLE_SHEET_ID` environment
 variable in Vercel (Project Settings → Environment Variables) to the ID from the
 sheet's URL (the long string between `/d/` and `/edit`).
 
+## Password-protecting the site
+
+This app includes its own login gate (`middleware.js`) so it isn't publicly
+accessible — Vercel's built-in Password Protection requires a paid add-on, so this
+does the same job for free.
+
+To turn it on:
+
+1. In Vercel: **Project Settings → Environment Variables**.
+2. Add two variables (for the **Production** environment):
+   - `SITE_USERNAME`
+   - `SITE_PASSWORD`
+3. Redeploy (Vercel → Deployments → click the latest → **Redeploy**), since env var
+   changes need a fresh deployment to take effect.
+
+Once set, visiting the site will prompt for a username/password (a standard browser
+login popup). Share those credentials only with people who should have access.
+Leaving either variable unset leaves the site open — useful for local development,
+but make sure both are set in Vercel itself.
+
+### The Google Sheet is a separate exposure
+
+The site reads the Google Sheet anonymously, so the sheet itself has to stay shared
+as "Anyone with the link." That means anyone who has the *sheet* link (not just the
+site link) can view the raw data, regardless of the site's password. Practically:
+treat the sheet's URL as sensitive and don't share it beyond people who should see
+the underlying data. If you want the sheet itself locked down too (not just
+link-shared), that requires switching to an authenticated fetch (a Google Cloud
+service account with Sheets API access) instead of the anonymous CSV export this
+app currently uses — a bigger change, let me know if you want that instead.
+
 ## Deploying to Vercel
 
 1. Push this repo to GitHub (already done if you're reading this from the repo).
