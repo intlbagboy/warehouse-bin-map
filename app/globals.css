@@ -137,13 +137,41 @@ h1 {
   background: #fdf2f2;
 }
 
+.map-layout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.map-main {
+  flex: 1 1 480px;
+  min-width: 0;
+}
+
+.map-side {
+  flex: 0 0 300px;
+  width: 300px;
+  position: sticky;
+  top: 20px;
+}
+
+.cell.selected {
+  outline: 2px solid #1a1a1a;
+  outline-offset: -2px;
+}
+
 .panel {
-  margin-top: 20px;
   background: #fff;
   border: 1px solid #e5e5e5;
   border-radius: 8px;
   padding: 20px;
   font-size: 14px;
+}
+
+.panel-placeholder {
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 .panel-header {
@@ -164,6 +192,40 @@ h1 {
   font-weight: 600;
   font-size: 17px;
   font-family: "SF Mono", Consolas, Monaco, monospace;
+}
+
+.entry-card {
+  padding: 14px 0;
+  border-top: 1px solid #f0f0f0;
+}
+
+.entry-card:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.entry-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.entry-field {
+  margin-bottom: 10px;
+}
+
+.entry-field:last-of-type {
+  margin-bottom: 0;
+}
+
+.field-label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #999;
+  margin-bottom: 3px;
 }
 
 .entry-table {
