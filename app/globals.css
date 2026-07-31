@@ -142,34 +142,108 @@ h1 {
   background: #fff;
   border: 1px solid #e5e5e5;
   border-radius: 8px;
-  padding: 16px;
+  padding: 20px;
   font-size: 14px;
+}
+
+.panel-header {
+  margin-bottom: 14px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.panel-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #999;
 }
 
 .panel-code {
   font-weight: 600;
-  margin-bottom: 8px;
+  font-size: 17px;
+  font-family: "SF Mono", Consolas, Monaco, monospace;
 }
 
-.entry-row {
-  padding: 6px 0;
-  border-top: 1px solid #eee;
-  color: #444;
+.entry-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
 }
 
-.entry-row:first-child {
-  border-top: none;
-}
-
-.not-verified {
-  color: #a3401d;
+.entry-table th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #999;
   font-weight: 600;
-  margin-left: 6px;
+  padding: 0 12px 8px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.entry-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: top;
+}
+
+.entry-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.col-qty {
+  text-align: right;
+}
+
+.qty-value {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.code-badge {
+  display: inline-block;
+  font-family: "SF Mono", Consolas, Monaco, monospace;
+  font-size: 13px;
+  background: #f2f2f2;
+  padding: 3px 7px;
+  border-radius: 4px;
+  color: #333;
+}
+
+.item-sku {
+  font-family: "SF Mono", Consolas, Monaco, monospace;
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 2px;
+}
+
+.item-desc {
+  color: #1a1a1a;
+}
+
+.status-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.status-badge.verified {
+  background: #e6f4ea;
+  color: #1e7e34;
+}
+
+.status-badge.needs-review {
+  background: #ffeb9c;
+  color: #7a3e0a;
 }
 
 .action-note {
-  margin-top: 4px;
-  padding: 6px 10px;
+  padding: 8px 12px;
   background: #fff4e5;
   border-left: 3px solid #d97706;
   border-radius: 4px;
@@ -180,12 +254,11 @@ h1 {
 .brand-tag {
   display: inline-block;
   color: #fff;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
-  padding: 2px 6px;
+  padding: 3px 8px;
   border-radius: 3px;
-  margin-right: 8px;
-  vertical-align: middle;
+  white-space: nowrap;
 }
 
 .brand-legend {
@@ -196,29 +269,15 @@ h1 {
   background: #fff;
   border: 1px solid #f0c36d;
   border-radius: 8px;
-  padding: 16px;
+  padding: 20px;
   margin-bottom: 20px;
+  overflow-x: auto;
 }
 
 .action-items-title {
   font-weight: 600;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
   color: #7a3e0a;
-}
-
-.action-item-row {
-  padding: 8px 0;
-  border-top: 1px solid #f2e2c4;
-  font-size: 14px;
-}
-
-.action-item-row:first-child {
-  border-top: none;
-}
-
-.action-item-loc {
-  font-weight: 600;
-  margin-right: 8px;
 }
 
 .muted {

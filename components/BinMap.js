@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Fragment } from "react";
 
 export default function BinMap({ data }) {
   const [selected, setSelected] = useState(null);
@@ -84,31 +84,65 @@ export default function BinMap({ data }) {
 
       {selected && (
         <div className="panel">
-          <div className="panel-code">{selected}</div>
+          <div className="panel-header">
+            <span className="panel-label">Bin</span>
+            <span className="panel-code">{selected}</span>
+          </div>
           {(() => {
             const loc = locations[selected];
             if (!loc || loc.entries.length === 0) {
               return <div className="muted">Empty</div>;
             }
-            return loc.entries.map((e, i) => (
-              <div className="entry-row" key={i}>
-                <div>
-                  {e.brand && (
-                    <span
-                      className="brand-tag"
-                      style={{ background: brandColors[e.brand] || "#999" }}
-                    >
-                      {e.brand}
-                    </span>
-                  )}
-                  LP {e.licensePlate} — {e.sku} · {e.description} · qty {e.qty}
-                  {!e.verified && <span className="not-verified">NOT VERIFIED</span>}
-                </div>
-                {!e.verified && e.notes && (
-                  <div className="action-note">Action: {e.notes}</div>
-                )}
-              </div>
-            ));
+            return (
+              <table className="entry-table">
+                <thead>
+                  <tr>
+                    <th>Brand</th>
+                    <th>License plate</th>
+                    <th>Item</th>
+                    <th className="col-qty">Qty</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loc.entries.map((e, i) => (
+                    <Fragment key={i}>
+                      <tr>
+                        <td>
+                          {e.brand && (
+                            <span className="brand-tag" style={{ background: brandColors[e.brand] || "#999" }}>
+                              {e.brand}
+                            </span>
+                          )}
+                        </td>
+                        <td>
+                          <span className="code-badge">{e.licensePlate}</span>
+                        </td>
+                        <td>
+                          <div className="item-sku">{e.sku}</div>
+                          <div className="item-desc">{e.description}</div>
+                        </td>
+                        <td className="col-qty qty-value">{e.qty}</td>
+                        <td>
+                          {e.verified ? (
+                            <span className="status-badge verified">Verified</span>
+                          ) : (
+                            <span className="status-badge needs-review">Needs review</span>
+                          )}
+                        </td>
+                      </tr>
+                      {!e.verified && e.notes && (
+                        <tr>
+                          <td colSpan={5}>
+                            <div className="action-note">Action: {e.notes}</div>
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
+                  ))}
+                </tbody>
+              </table>
+            );
           })()}
         </div>
       )}

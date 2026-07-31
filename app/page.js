@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { getWarehouseData } from "../lib/sheetData";
 import BinMap from "../components/BinMap";
 
@@ -79,14 +80,50 @@ export default async function Home() {
             Action items — {data.actionItems.length} unverified transfer
             {data.actionItems.length === 1 ? "" : "s"}
           </div>
-          {data.actionItems.map((item, i) => (
-            <div className="action-item-row" key={i}>
-              <span className="action-item-loc">{item.location}</span>
-              {item.brand && <span className="brand-tag" style={{ background: data.brandColors[item.brand] || "#999" }}>{item.brand}</span>}
-              LP {item.licensePlate} — {item.sku} · {item.description} · qty {item.qty}
-              <div className="action-note">Action: {item.notes || "No note provided — check with whoever logged this transfer."}</div>
-            </div>
-          ))}
+          <table className="entry-table">
+            <thead>
+              <tr>
+                <th>Bin</th>
+                <th>Brand</th>
+                <th>License plate</th>
+                <th>Item</th>
+                <th className="col-qty">Qty</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.actionItems.map((item, i) => (
+                <Fragment key={i}>
+                  <tr>
+                    <td>
+                      <span className="code-badge">{item.location}</span>
+                    </td>
+                    <td>
+                      {item.brand && (
+                        <span className="brand-tag" style={{ background: data.brandColors[item.brand] || "#999" }}>
+                          {item.brand}
+                        </span>
+                      )}
+                    </td>
+                    <td>
+                      <span className="code-badge">{item.licensePlate}</span>
+                    </td>
+                    <td>
+                      <div className="item-sku">{item.sku}</div>
+                      <div className="item-desc">{item.description}</div>
+                    </td>
+                    <td className="col-qty qty-value">{item.qty}</td>
+                  </tr>
+                  <tr>
+                    <td colSpan={5}>
+                      <div className="action-note">
+                        Action: {item.notes || "No note provided — check with whoever logged this transfer."}
+                      </div>
+                    </td>
+                  </tr>
+                </Fragment>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </main>
