@@ -112,7 +112,9 @@ export default function BinMap({ data }) {
   const aisles = data.aisles;
   const brandColors = data.brandColors || {};
   const brands = Object.keys(brandColors);
+  const referencedBins = data.referencedBins || {};
   const loc = selected ? locations[selected] : null;
+  const selectedRefs = selected ? referencedBins[selected] : null;
 
   const normalizedQuery = query.trim().toLowerCase();
   const searching = normalizedQuery.length > 0;
@@ -264,6 +266,11 @@ export default function BinMap({ data }) {
           )}
         </div>
 
+        <div className="legend flag-legend">
+          <span className="flag-badge-sample">!</span>
+          <span className="muted">Expected here — mentioned in another bin&apos;s action item</span>
+        </div>
+
         {brands.length > 0 && (
           <div className="legend brand-legend">
             <span className="muted" style={{ marginRight: 4 }}>
@@ -300,18 +307,24 @@ export default function BinMap({ data }) {
                   const brandColor = cellLoc.brand ? brandColors[cellLoc.brand] : null;
                   const isMatch = filtering && matchSet.has(code);
                   const isDimmed = filtering && !isMatch;
+                  const refs = referencedBins[code];
                   let className = `cell ${cellLoc.status}`;
                   if (selected === code) className += " selected";
                   if (isMatch) className += " match";
                   if (isDimmed) className += " dimmed";
+                  if (refs && refs.length > 0) className += " flagged";
+                  const titleParts = [code];
+                  if (cellLoc.brand) titleParts.push(cellLoc.brand);
+                  if (refs && refs.length > 0) titleParts.push("expected here — see action items");
                   return (
                     <div
                       key={code}
                       className={className}
                       onClick={() => cellLoc.status !== "blocked" && setSelected(code)}
-                      title={cellLoc.brand ? `${code} — ${cellLoc.brand}` : code}
+                      title={titleParts.join(" — ")}
                       style={brandColor ? { borderTop: `3px solid ${brandColor}` } : undefined}
                     >
+                      {refs && refs.length > 0 && <span className="flag-badge">!</span>}
                       {cellLoc.status === "blocked" ? "" : cellLoc.qty > 0 ? cellLoc.qty : ""}
                     </div>
                   );
@@ -374,6 +387,32 @@ export default function BinMap({ data }) {
                     {!e.verified && e.notes && <div className="action-note">Action: {e.notes}</div>}
                   </div>
                 ))
+              )}
+
+              {selectedRefs && selectedRefs.length > 0 && (
+                <div className="entry-card">
+                  <div className="flag-callout-title">
+                    <span className="flag-badge">!</span> Expected here
+                  </div>
+                  {selectedRefs.map((r, i) => (
+                    <div key={i} className="flag-callout">
+                      <div className="entry-field">
+                        <span className="field-label">From bin</span>
+                        <span className="code-badge">{r.fromLocation}</span>
+                      </div>
+                      <div className="entry-field">
+                        <span className="field-label">Item</span>
+                        <div className="item-sku">{r.sku}</div>
+                        <div className="item-desc">{r.description}</div>
+                      </div>
+                      <div className="entry-field">
+                        <span className="field-label">Qty</span>
+                        <span className="qty-value">{r.qty}</span>
+                      </div>
+                      <div className="action-note">Note (at {r.fromLocation}): {r.notes}</div>
+                    </div>
+                  ))}
+                </div>
               )}
             </>
           )}
