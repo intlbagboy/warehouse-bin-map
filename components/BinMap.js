@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, Fragment } from "react";
+import { useState, useMemo, useEffect, useRef, Fragment } from "react";
 
 const STATUS_OPTIONS = [
   { key: "occupied", label: "Occupied", color: "#c6efce" },
@@ -9,15 +9,104 @@ const STATUS_OPTIONS = [
   { key: "empty", label: "Empty", color: "#fdf2f2" },
 ];
 
-function entryMatches(entry, query) {
+function entryMatchesText(entry, query) {
   const haystacks = [entry.sku, entry.description, entry.brand, entry.licensePlate];
   return haystacks.some((h) => h && h.toLowerCase().includes(query));
+}
+
+// Item descriptions in the sheet are formatted "Base Name - Color" (e.g.
+// "Stowaway 45L Duffel - Spruce"). Split on the last " - " so base names that
+// happen to contain dashes elsewhere aren't broken.
+function splitDescription(desc) {
+  if (!desc) return { base: "", color: "" };
+  const idx = desc.lastIndexOf(" - ");
+  if (idx === -1) return { base: desc.trim(), color: "" };
+  return { base: desc.slice(0, idx).trim(), color: desc.slice(idx + 3).trim() };
+}
+
+function SearchableSelect({ label, options, value, onChange }) {
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState("");
+  const ref = useRef(null);
+
+  useEffect(() => {
+    function onClickOutside(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, []);
+
+  const filtered = useMemo(() => {
+    const q = text.trim().toLowerCase();
+    if (!q) return options;
+    return options.filter((o) => o.toLowerCase().includes(q));
+  }, [text, options]);
+
+  return (
+    <div className="combo" ref={ref}>
+      <span className="combo-label">{label}</span>
+      <div className="combo-input-wrap">
+        <input
+          type="text"
+          className="search-input"
+          placeholder={`All ${label.toLowerCase()}s`}
+          value={open ? text : value || ""}
+          onFocus={() => {
+            setOpen(true);
+            setText("");
+          }}
+          onChange={(e) => setText(e.target.value)}
+        />
+        {value && !open && (
+          <button
+            className="search-clear"
+            onClick={(e) => {
+              e.stopPropagation();
+              onChange(null);
+            }}
+            aria-label={`Clear ${label}`}
+          >
+            ×
+          </button>
+        )}
+      </div>
+      {open && (
+        <div className="combo-list">
+          <div
+            className="combo-option combo-option-all"
+            onClick={() => {
+              onChange(null);
+              setOpen(false);
+            }}
+          >
+            All {label.toLowerCase()}s
+          </div>
+          {filtered.length === 0 && <div className="combo-empty muted">No matches</div>}
+          {filtered.map((opt) => (
+            <div
+              key={opt}
+              className={`combo-option${opt === value ? " selected" : ""}`}
+              onClick={() => {
+                onChange(opt);
+                setOpen(false);
+              }}
+            >
+              {opt}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function BinMap({ data }) {
   const [selected, setSelected] = useState(null);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState(null);
+  const [selectedDescription, setSelectedDescription] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(null);
 
   const locations = data.locations;
   const aisles = data.aisles;
@@ -27,10 +116,45 @@ export default function BinMap({ data }) {
 
   const normalizedQuery = query.trim().toLowerCase();
   const searching = normalizedQuery.length > 0;
-  const filtering = searching || statusFilter !== null;
 
-  // All bin codes that satisfy the active text search AND status filter (if set),
-  // in reading order, for the jump-list / highlighting.
+  // Every distinct base description, and which colors actually occur for each one.
+  const { descriptions, colorsByDescription, allColors } = useMemo(() => {
+    const descSet = new Set();
+    const colorMap = new Map();
+    const colorSet = new Set();
+    for (const l of Object.values(locations)) {
+      for (const e of l.entries || []) {
+        const { base, color } = splitDescription(e.description);
+        if (!base) continue;
+        descSet.add(base);
+        if (color) {
+          colorSet.add(color);
+          if (!colorMap.has(base)) colorMap.set(base, new Set());
+          colorMap.get(base).add(color);
+        }
+      }
+    }
+    return {
+      descriptions: [...descSet].sort(),
+      colorsByDescription: colorMap,
+      allColors: [...colorSet].sort(),
+    };
+  }, [locations]);
+
+  const colorOptions = useMemo(() => {
+    if (!selectedDescription) return allColors;
+    return [...(colorsByDescription.get(selectedDescription) || new Set())].sort();
+  }, [selectedDescription, colorsByDescription, allColors]);
+
+  // If switching descriptions makes the current color selection invalid, drop it.
+  useEffect(() => {
+    if (selectedColor && !colorOptions.includes(selectedColor)) {
+      setSelectedColor(null);
+    }
+  }, [colorOptions, selectedColor]);
+
+  const filtering = searching || statusFilter !== null || selectedDescription !== null || selectedColor !== null;
+
   const matches = useMemo(() => {
     if (!filtering) return [];
     const found = [];
@@ -41,48 +165,76 @@ export default function BinMap({ data }) {
           const cellLoc = locations[code];
           if (!cellLoc) continue;
           if (statusFilter && cellLoc.status !== statusFilter) continue;
-          if (searching && !cellLoc.entries.some((e) => entryMatches(e, normalizedQuery))) continue;
+
+          const needsEntryCheck = searching || selectedDescription || selectedColor;
+          if (needsEntryCheck) {
+            const hasMatch = cellLoc.entries.some((e) => {
+              if (searching && !entryMatchesText(e, normalizedQuery)) return false;
+              if (selectedDescription || selectedColor) {
+                const { base, color } = splitDescription(e.description);
+                if (selectedDescription && base !== selectedDescription) return false;
+                if (selectedColor && color !== selectedColor) return false;
+              }
+              return true;
+            });
+            if (!hasMatch) continue;
+          }
+
           found.push(code);
         }
       }
     }
     return found;
-  }, [normalizedQuery, searching, statusFilter, filtering, aisles, locations]);
+  }, [normalizedQuery, searching, statusFilter, selectedDescription, selectedColor, filtering, aisles, locations]);
 
   const matchSet = useMemo(() => new Set(matches), [matches]);
 
   const statusLabel = statusFilter ? STATUS_OPTIONS.find((s) => s.key === statusFilter)?.label : null;
+  const filterParts = [];
+  if (searching) filterParts.push(`"${query}"`);
+  if (statusLabel) filterParts.push(statusLabel);
+  if (selectedDescription) filterParts.push(selectedDescription);
+  if (selectedColor) filterParts.push(selectedColor);
 
   return (
     <div className="map-layout">
       <div className="map-main">
         <div className="search-bar">
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Search SKU, description, brand, or license plate…"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
+          <div className="search-input-wrap">
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Search SKU, description, brand, or license plate…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            {query && (
+              <button className="search-clear" onClick={() => setQuery("")} aria-label="Clear search">
+                ×
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div className="combo-row">
+          <SearchableSelect
+            label="Description"
+            options={descriptions}
+            value={selectedDescription}
+            onChange={setSelectedDescription}
           />
-          {query && (
-            <button className="search-clear" onClick={() => setQuery("")} aria-label="Clear search">
-              ×
-            </button>
-          )}
+          <SearchableSelect label="Color" options={colorOptions} value={selectedColor} onChange={setSelectedColor} />
         </div>
 
         {filtering && (
           <div className="search-results">
             {matches.length === 0 ? (
-              <span className="muted">
-                No bins match{searching ? ` "${query}"` : ""}
-                {statusLabel ? ` (${statusLabel})` : ""}.
-              </span>
-            ) : searching ? (
+              <span className="muted">No bins match {filterParts.join(" · ")}.</span>
+            ) : (
               <>
                 <span className="muted" style={{ marginRight: 8 }}>
                   {matches.length} match{matches.length === 1 ? "" : "es"}
-                  {statusLabel ? ` — ${statusLabel}` : ""}:
+                  {filterParts.length ? ` — ${filterParts.join(" · ")}` : ""}:
                 </span>
                 {matches.map((code) => (
                   <button key={code} className="search-chip" onClick={() => setSelected(code)}>
@@ -90,10 +242,6 @@ export default function BinMap({ data }) {
                   </button>
                 ))}
               </>
-            ) : (
-              <span className="muted">
-                {matches.length} bin{matches.length === 1 ? "" : "s"} — {statusLabel}
-              </span>
             )}
           </div>
         )}

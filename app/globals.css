@@ -176,7 +176,12 @@ h1 {
   align-items: center;
   gap: 8px;
   margin-bottom: 12px;
+}
+
+.search-input-wrap {
   position: relative;
+  width: 100%;
+  max-width: 480px;
 }
 
 .search-input {
@@ -196,7 +201,9 @@ h1 {
 
 .search-clear {
   position: absolute;
-  left: calc(min(480px, 100%) - 32px);
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
   border: none;
   background: none;
   font-size: 20px;
@@ -239,6 +246,75 @@ h1 {
 
 .cell.dimmed {
   opacity: 0.25;
+}
+
+.combo-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.combo {
+  position: relative;
+  flex: 1 1 220px;
+  max-width: 320px;
+}
+
+.combo-label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #999;
+  margin-bottom: 4px;
+}
+
+.combo-input-wrap {
+  position: relative;
+}
+
+.combo-input-wrap .search-input {
+  max-width: none;
+}
+
+.combo-list {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.combo-option {
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.combo-option:hover {
+  background: #f2f2f2;
+}
+
+.combo-option.selected {
+  background: #e6f0fa;
+  font-weight: 600;
+}
+
+.combo-option-all {
+  color: #1F4E78;
+  border-bottom: 1px solid #eee;
+}
+
+.combo-empty {
+  padding: 8px 12px;
+  font-size: 13px;
 }
 
 .map-layout {
