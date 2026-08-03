@@ -1,9 +1,15 @@
 "use client";
 
-import { useState, Fragment } from "react";
+import { useState, useMemo, Fragment } from "react";
+
+function entryMatches(entry, query) {
+  const haystacks = [entry.sku, entry.description, entry.brand, entry.licensePlate];
+  return haystacks.some((h) => h && h.toLowerCase().includes(query));
+}
 
 export default function BinMap({ data }) {
   const [selected, setSelected] = useState(null);
+  const [query, setQuery] = useState("");
 
   const locations = data.locations;
   const aisles = data.aisles;
@@ -11,9 +17,66 @@ export default function BinMap({ data }) {
   const brands = Object.keys(brandColors);
   const loc = selected ? locations[selected] : null;
 
+  const normalizedQuery = query.trim().toLowerCase();
+  const searching = normalizedQuery.length > 0;
+
+  // All matching bin codes across every aisle, in reading order, for the jump-list.
+  const matches = useMemo(() => {
+    if (!searching) return [];
+    const found = [];
+    for (const aisle of aisles) {
+      for (let level = aisle.levels; level >= 1; level--) {
+        for (let spot = 1; spot <= aisle.spots; spot++) {
+          const code = `${aisle.code}-${String(spot).padStart(2, "0")}-${level}`;
+          const cellLoc = locations[code];
+          if (cellLoc && cellLoc.entries.some((e) => entryMatches(e, normalizedQuery))) {
+            found.push(code);
+          }
+        }
+      }
+    }
+    return found;
+  }, [normalizedQuery, searching, aisles, locations]);
+
+  const matchSet = useMemo(() => new Set(matches), [matches]);
+
   return (
     <div className="map-layout">
       <div className="map-main">
+        <div className="search-bar">
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Search SKU, description, brand, or license plate…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          {query && (
+            <button className="search-clear" onClick={() => setQuery("")} aria-label="Clear search">
+              ×
+            </button>
+          )}
+        </div>
+
+        {searching && (
+          <div className="search-results">
+            {matches.length === 0 ? (
+              <span className="muted">No bins match &quot;{query}&quot;.</span>
+            ) : (
+              <>
+                <span className="muted" style={{ marginRight: 8 }}>
+                  {matches.length} match{matches.length === 1 ? "" : "es"}:
+                </span>
+                {matches.map((code) => (
+                  <button key={code} className="search-chip" onClick={() => setSelected(code)}>
+                    {code}
+                  </button>
+                ))}
+              </>
+            )}
+          </div>
+        )}
+
         <div className="legend">
           <span>
             <span className="legend-swatch" style={{ background: "#c6efce" }} />
@@ -67,10 +130,16 @@ export default function BinMap({ data }) {
                   const code = `${aisle.code}-${String(spot).padStart(2, "0")}-${level}`;
                   const cellLoc = locations[code] || { status: "empty", entries: [], qty: 0, brand: "" };
                   const brandColor = cellLoc.brand ? brandColors[cellLoc.brand] : null;
+                  const isMatch = searching && matchSet.has(code);
+                  const isDimmed = searching && !isMatch;
+                  let className = `cell ${cellLoc.status}`;
+                  if (selected === code) className += " selected";
+                  if (isMatch) className += " match";
+                  if (isDimmed) className += " dimmed";
                   return (
                     <div
                       key={code}
-                      className={`cell ${cellLoc.status}${selected === code ? " selected" : ""}`}
+                      className={className}
                       onClick={() => cellLoc.status !== "blocked" && setSelected(code)}
                       title={cellLoc.brand ? `${code} — ${cellLoc.brand}` : code}
                       style={brandColor ? { borderTop: `3px solid ${brandColor}` } : undefined}

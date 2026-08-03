@@ -137,6 +137,76 @@ h1 {
   background: #fdf2f2;
 }
 
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 480px;
+  padding: 10px 36px 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fff;
+}
+
+.search-input:focus {
+  outline: 2px solid #1F4E78;
+  outline-offset: -1px;
+}
+
+.search-clear {
+  position: absolute;
+  left: calc(min(480px, 100%) - 32px);
+  border: none;
+  background: none;
+  font-size: 20px;
+  line-height: 1;
+  color: #999;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.search-results {
+  margin-bottom: 16px;
+  font-size: 13px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.search-chip {
+  border: 1px solid #d97706;
+  background: #fff4e5;
+  color: #7a3e0a;
+  font-family: "SF Mono", Consolas, Monaco, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.search-chip:hover {
+  background: #ffe8c7;
+}
+
+.cell.match {
+  outline: 3px solid #d97706;
+  outline-offset: 1px;
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
+}
+
+.cell.dimmed {
+  opacity: 0.25;
+}
+
 .map-layout {
   display: flex;
   gap: 20px;
