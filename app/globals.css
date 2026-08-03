@@ -154,6 +154,7 @@ h1 {
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: opacity 150ms ease, filter 150ms ease;
   background: #fff;
 }
 
@@ -239,13 +240,13 @@ h1 {
 }
 
 .cell.match {
-  outline: 3px solid #d97706;
-  outline-offset: 1px;
-  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
+  position: relative;
+  z-index: 1;
 }
 
 .cell.dimmed {
-  opacity: 0.25;
+  opacity: 0.15;
+  filter: saturate(40%);
 }
 
 .combo-row {
