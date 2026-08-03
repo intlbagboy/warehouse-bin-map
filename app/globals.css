@@ -54,11 +54,45 @@ h1 {
 
 .legend {
   display: flex;
-  gap: 16px;
+  gap: 8px;
   align-items: center;
   margin-bottom: 16px;
   font-size: 13px;
   color: #444;
+  flex-wrap: wrap;
+}
+
+.legend-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid transparent;
+  background: none;
+  border-radius: 14px;
+  padding: 4px 10px;
+  font-size: 13px;
+  color: #444;
+  cursor: pointer;
+}
+
+.legend-btn:hover {
+  background: #eee;
+}
+
+.legend-btn.active {
+  border-color: #1a1a1a;
+  background: #fff;
+  font-weight: 600;
+}
+
+.legend-reset {
+  border: none;
+  background: none;
+  color: #1F4E78;
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 4px 6px;
 }
 
 .legend-swatch {

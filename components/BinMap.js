@@ -2,6 +2,13 @@
 
 import { useState, useMemo, Fragment } from "react";
 
+const STATUS_OPTIONS = [
+  { key: "occupied", label: "Occupied", color: "#c6efce" },
+  { key: "review", label: "Needs review", color: "#ffeb9c" },
+  { key: "blocked", label: "Blocked (beam)", color: "#d9d9d9" },
+  { key: "empty", label: "Empty", color: "#fdf2f2" },
+];
+
 function entryMatches(entry, query) {
   const haystacks = [entry.sku, entry.description, entry.brand, entry.licensePlate];
   return haystacks.some((h) => h && h.toLowerCase().includes(query));
@@ -10,6 +17,7 @@ function entryMatches(entry, query) {
 export default function BinMap({ data }) {
   const [selected, setSelected] = useState(null);
   const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState(null);
 
   const locations = data.locations;
   const aisles = data.aisles;
@@ -19,26 +27,31 @@ export default function BinMap({ data }) {
 
   const normalizedQuery = query.trim().toLowerCase();
   const searching = normalizedQuery.length > 0;
+  const filtering = searching || statusFilter !== null;
 
-  // All matching bin codes across every aisle, in reading order, for the jump-list.
+  // All bin codes that satisfy the active text search AND status filter (if set),
+  // in reading order, for the jump-list / highlighting.
   const matches = useMemo(() => {
-    if (!searching) return [];
+    if (!filtering) return [];
     const found = [];
     for (const aisle of aisles) {
       for (let level = aisle.levels; level >= 1; level--) {
         for (let spot = 1; spot <= aisle.spots; spot++) {
           const code = `${aisle.code}-${String(spot).padStart(2, "0")}-${level}`;
           const cellLoc = locations[code];
-          if (cellLoc && cellLoc.entries.some((e) => entryMatches(e, normalizedQuery))) {
-            found.push(code);
-          }
+          if (!cellLoc) continue;
+          if (statusFilter && cellLoc.status !== statusFilter) continue;
+          if (searching && !cellLoc.entries.some((e) => entryMatches(e, normalizedQuery))) continue;
+          found.push(code);
         }
       }
     }
     return found;
-  }, [normalizedQuery, searching, aisles, locations]);
+  }, [normalizedQuery, searching, statusFilter, filtering, aisles, locations]);
 
   const matchSet = useMemo(() => new Set(matches), [matches]);
+
+  const statusLabel = statusFilter ? STATUS_OPTIONS.find((s) => s.key === statusFilter)?.label : null;
 
   return (
     <div className="map-layout">
@@ -58,14 +71,18 @@ export default function BinMap({ data }) {
           )}
         </div>
 
-        {searching && (
+        {filtering && (
           <div className="search-results">
             {matches.length === 0 ? (
-              <span className="muted">No bins match &quot;{query}&quot;.</span>
-            ) : (
+              <span className="muted">
+                No bins match{searching ? ` "${query}"` : ""}
+                {statusLabel ? ` (${statusLabel})` : ""}.
+              </span>
+            ) : searching ? (
               <>
                 <span className="muted" style={{ marginRight: 8 }}>
-                  {matches.length} match{matches.length === 1 ? "" : "es"}:
+                  {matches.length} match{matches.length === 1 ? "" : "es"}
+                  {statusLabel ? ` — ${statusLabel}` : ""}:
                 </span>
                 {matches.map((code) => (
                   <button key={code} className="search-chip" onClick={() => setSelected(code)}>
@@ -73,27 +90,30 @@ export default function BinMap({ data }) {
                   </button>
                 ))}
               </>
+            ) : (
+              <span className="muted">
+                {matches.length} bin{matches.length === 1 ? "" : "s"} — {statusLabel}
+              </span>
             )}
           </div>
         )}
 
         <div className="legend">
-          <span>
-            <span className="legend-swatch" style={{ background: "#c6efce" }} />
-            Occupied
-          </span>
-          <span>
-            <span className="legend-swatch" style={{ background: "#ffeb9c" }} />
-            Needs review
-          </span>
-          <span>
-            <span className="legend-swatch" style={{ background: "#d9d9d9" }} />
-            Blocked (beam)
-          </span>
-          <span>
-            <span className="legend-swatch" style={{ background: "#fdf2f2" }} />
-            Empty
-          </span>
+          {STATUS_OPTIONS.map((opt) => (
+            <button
+              key={opt.key}
+              className={`legend-btn${statusFilter === opt.key ? " active" : ""}`}
+              onClick={() => setStatusFilter(statusFilter === opt.key ? null : opt.key)}
+            >
+              <span className="legend-swatch" style={{ background: opt.color }} />
+              {opt.label}
+            </button>
+          ))}
+          {statusFilter && (
+            <button className="legend-reset" onClick={() => setStatusFilter(null)}>
+              Clear filter
+            </button>
+          )}
         </div>
 
         {brands.length > 0 && (
@@ -130,8 +150,8 @@ export default function BinMap({ data }) {
                   const code = `${aisle.code}-${String(spot).padStart(2, "0")}-${level}`;
                   const cellLoc = locations[code] || { status: "empty", entries: [], qty: 0, brand: "" };
                   const brandColor = cellLoc.brand ? brandColors[cellLoc.brand] : null;
-                  const isMatch = searching && matchSet.has(code);
-                  const isDimmed = searching && !isMatch;
+                  const isMatch = filtering && matchSet.has(code);
+                  const isDimmed = filtering && !isMatch;
                   let className = `cell ${cellLoc.status}`;
                   if (selected === code) className += " selected";
                   if (isMatch) className += " match";
