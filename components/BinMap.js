@@ -285,54 +285,63 @@ export default function BinMap({ data }) {
           </div>
         )}
 
-        {aisles.map((aisle) => (
-          <div className="aisle-block" key={aisle.code}>
-            <div className="aisle-title">Aisle {aisle.code}</div>
+        {aisles.map((aisle) => {
+          const spotOrder = aisle.flipped
+            ? Array.from({ length: aisle.spots }, (_, i) => aisle.spots - i)
+            : Array.from({ length: aisle.spots }, (_, i) => i + 1);
 
-            <div className="grid-row">
-              <div className="level-label" />
-              {Array.from({ length: aisle.spots }, (_, i) => i + 1).map((spot) => (
-                <div className="spot-header" key={spot}>
-                  {spot}
+          return (
+            <div className="aisle-block" key={aisle.code}>
+              <div className="aisle-title">
+                Aisle {aisle.code}
+                {aisle.flipped && <span className="aisle-flipped-tag">flipped</span>}
+              </div>
+
+              <div className="grid-row">
+                <div className="level-label" />
+                {spotOrder.map((spot) => (
+                  <div className="spot-header" key={spot}>
+                    {spot}
+                  </div>
+                ))}
+              </div>
+
+              {Array.from({ length: aisle.levels }, (_, i) => aisle.levels - i).map((level) => (
+                <div className="grid-row" key={level}>
+                  <div className="level-label">L{level}</div>
+                  {spotOrder.map((spot) => {
+                    const code = `${aisle.code}-${String(spot).padStart(2, "0")}-${level}`;
+                    const cellLoc = locations[code] || { status: "empty", entries: [], qty: 0, brand: "" };
+                    const brandColor = cellLoc.brand ? brandColors[cellLoc.brand] : null;
+                    const isMatch = filtering && matchSet.has(code);
+                    const isDimmed = filtering && !isMatch;
+                    const refs = referencedBins[code];
+                    let className = `cell ${cellLoc.status}`;
+                    if (selected === code) className += " selected";
+                    if (isMatch) className += " match";
+                    if (isDimmed) className += " dimmed";
+                    if (refs && refs.length > 0) className += " flagged";
+                    const titleParts = [code];
+                    if (cellLoc.brand) titleParts.push(cellLoc.brand);
+                    if (refs && refs.length > 0) titleParts.push("mentioned in another bin's note — click for details");
+                    return (
+                      <div
+                        key={code}
+                        className={className}
+                        onClick={() => cellLoc.status !== "blocked" && setSelected(code)}
+                        title={titleParts.join(" — ")}
+                        style={brandColor ? { borderTop: `3px solid ${brandColor}` } : undefined}
+                      >
+                        {refs && refs.length > 0 && <span className="flag-badge">!</span>}
+                        {cellLoc.status === "blocked" ? "" : cellLoc.qty > 0 ? cellLoc.qty : ""}
+                      </div>
+                    );
+                  })}
                 </div>
               ))}
             </div>
-
-            {Array.from({ length: aisle.levels }, (_, i) => aisle.levels - i).map((level) => (
-              <div className="grid-row" key={level}>
-                <div className="level-label">L{level}</div>
-                {Array.from({ length: aisle.spots }, (_, i) => i + 1).map((spot) => {
-                  const code = `${aisle.code}-${String(spot).padStart(2, "0")}-${level}`;
-                  const cellLoc = locations[code] || { status: "empty", entries: [], qty: 0, brand: "" };
-                  const brandColor = cellLoc.brand ? brandColors[cellLoc.brand] : null;
-                  const isMatch = filtering && matchSet.has(code);
-                  const isDimmed = filtering && !isMatch;
-                  const refs = referencedBins[code];
-                  let className = `cell ${cellLoc.status}`;
-                  if (selected === code) className += " selected";
-                  if (isMatch) className += " match";
-                  if (isDimmed) className += " dimmed";
-                  if (refs && refs.length > 0) className += " flagged";
-                  const titleParts = [code];
-                  if (cellLoc.brand) titleParts.push(cellLoc.brand);
-                  if (refs && refs.length > 0) titleParts.push("mentioned in another bin's note — click for details");
-                  return (
-                    <div
-                      key={code}
-                      className={className}
-                      onClick={() => cellLoc.status !== "blocked" && setSelected(code)}
-                      title={titleParts.join(" — ")}
-                      style={brandColor ? { borderTop: `3px solid ${brandColor}` } : undefined}
-                    >
-                      {refs && refs.length > 0 && <span className="flag-badge">!</span>}
-                      {cellLoc.status === "blocked" ? "" : cellLoc.qty > 0 ? cellLoc.qty : ""}
-                    </div>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="map-side">
