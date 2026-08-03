@@ -268,7 +268,7 @@ export default function BinMap({ data }) {
 
         <div className="legend flag-legend">
           <span className="flag-badge-sample">!</span>
-          <span className="muted">Expected here — mentioned in another bin&apos;s action item</span>
+          <span className="muted">Mentioned in another bin&apos;s action-item note — may not be where it belongs</span>
         </div>
 
         {brands.length > 0 && (
@@ -315,7 +315,7 @@ export default function BinMap({ data }) {
                   if (refs && refs.length > 0) className += " flagged";
                   const titleParts = [code];
                   if (cellLoc.brand) titleParts.push(cellLoc.brand);
-                  if (refs && refs.length > 0) titleParts.push("expected here — see action items");
+                  if (refs && refs.length > 0) titleParts.push("mentioned in another bin's note — click for details");
                   return (
                     <div
                       key={code}
@@ -392,16 +392,15 @@ export default function BinMap({ data }) {
               {selectedRefs && selectedRefs.length > 0 && (
                 <div className="entry-card">
                   <div className="flag-callout-title">
-                    <span className="flag-badge">!</span> Expected here
+                    <span className="flag-badge">!</span> Mentioned in another bin&apos;s note
                   </div>
                   {selectedRefs.map((r, i) => (
                     <div key={i} className="flag-callout">
-                      <div className="entry-field">
-                        <span className="field-label">From bin</span>
-                        <span className="code-badge">{r.fromLocation}</span>
+                      <div className="action-note">
+                        Note logged at <span className="code-badge">{r.fromLocation}</span>: {r.notes}
                       </div>
-                      <div className="entry-field">
-                        <span className="field-label">Item</span>
+                      <div className="entry-field" style={{ marginTop: 10 }}>
+                        <span className="field-label">Item mentioned</span>
                         <div className="item-sku">{r.sku}</div>
                         <div className="item-desc">{r.description}</div>
                       </div>
@@ -409,7 +408,6 @@ export default function BinMap({ data }) {
                         <span className="field-label">Qty</span>
                         <span className="qty-value">{r.qty}</span>
                       </div>
-                      <div className="action-note">Note (at {r.fromLocation}): {r.notes}</div>
                     </div>
                   ))}
                 </div>
