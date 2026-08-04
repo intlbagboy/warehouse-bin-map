@@ -1,8 +1,8 @@
 import { Fragment } from "react";
 import { getWarehouseData } from "../lib/sheetData";
+import { getNetSuiteData } from "../lib/netsuiteData";
 import BinMap from "../components/BinMap";
-
-export const revalidate = 60; // re-fetch the sheet at most once a minute
+import SourceToggle from "../components/SourceToggle";
 
 function computeStats(data) {
   const values = Object.values(data.locations);
@@ -15,11 +15,14 @@ function computeStats(data) {
   return { total, blocked, usable, occupied, review, empty };
 }
 
-export default async function Home() {
+export default async function Home({ searchParams }) {
+  const sp = (await searchParams) || {};
+  const source = sp.source === "netsuite" ? "netsuite" : "sheets";
+
   let data;
   let error;
   try {
-    data = await getWarehouseData();
+    data = source === "netsuite" ? await getNetSuiteData() : await getWarehouseData();
   } catch (e) {
     error = e.message;
   }
@@ -28,6 +31,7 @@ export default async function Home() {
     return (
       <main>
         <h1>Warehouse Bin Map</h1>
+        <SourceToggle current={source} />
         <p className="subtitle">Couldn&apos;t load live data: {error}</p>
       </main>
     );
@@ -39,15 +43,22 @@ export default async function Home() {
   return (
     <main>
       <h1>Warehouse Bin Map</h1>
+      <SourceToggle current={source} />
+
       <p className="subtitle">
-        Live from Google Sheets — last checked{" "}
+        {source === "netsuite" ? "From NetSuite export, uploaded" : "Live from Google Sheets — last checked"}{" "}
         {new Date(data.generatedAt).toLocaleString("en-US", {
           timeZone: "America/Chicago",
           dateStyle: "short",
           timeStyle: "medium",
         })}{" "}
-        CT. Refreshes automatically about once a minute.
+        CT.{" "}
+        {source === "netsuite"
+          ? "Drop a new export in as data/netsuite-inventory.xlsx and push to update."
+          : "Refreshes automatically about once a minute."}
       </p>
+
+      {data.fileError && <p className="subtitle" style={{ color: "#a3401d" }}>{data.fileError}</p>}
 
       <div className="stats">
         <div className="stat-card">
@@ -58,10 +69,12 @@ export default async function Home() {
           <div className="stat-label">Occupied</div>
           <div className="stat-value">{stats.occupied + stats.review}</div>
         </div>
-        <div className="stat-card">
-          <div className="stat-label">Needs review</div>
-          <div className="stat-value">{stats.review}</div>
-        </div>
+        {source === "sheets" && (
+          <div className="stat-card">
+            <div className="stat-label">Needs review</div>
+            <div className="stat-value">{stats.review}</div>
+          </div>
+        )}
         <div className="stat-card">
           <div className="stat-label">Blocked (beam)</div>
           <div className="stat-value">{stats.blocked}</div>
@@ -70,6 +83,12 @@ export default async function Home() {
           <div className="stat-label">% complete</div>
           <div className="stat-value">{pctComplete.toFixed(1)}%</div>
         </div>
+        {source === "netsuite" && (
+          <div className="stat-card">
+            <div className="stat-label">Not yet on a rack (per NetSuite)</div>
+            <div className="stat-value">{(data.unmatchedCount || 0).toLocaleString()}</div>
+          </div>
+        )}
       </div>
 
       <BinMap data={data} />
