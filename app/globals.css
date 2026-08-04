@@ -124,6 +124,19 @@ h1 {
   padding: 4px 6px;
 }
 
+.brand-swatch {
+  display: inline-block;
+  width: 16px;
+  height: 12px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-top-width: 3px;
+  border-top-style: solid;
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
 .legend-swatch {
   display: inline-block;
   width: 12px;

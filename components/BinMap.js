@@ -278,7 +278,10 @@ export default function BinMap({ data }) {
             </span>
             {brands.map((b) => (
               <span key={b}>
-                <span className="legend-swatch" style={{ background: brandColors[b] }} />
+                <span
+                  className="brand-swatch"
+                  style={{ borderTopColor: brandColors[b]?.color, borderTopStyle: brandColors[b]?.pattern }}
+                />
                 {b}
               </span>
             ))}
@@ -312,7 +315,7 @@ export default function BinMap({ data }) {
                   {spotOrder.map((spot) => {
                     const code = `${aisle.code}-${String(spot).padStart(2, "0")}-${level}`;
                     const cellLoc = locations[code] || { status: "empty", entries: [], qty: 0, brand: "" };
-                    const brandColor = cellLoc.brand ? brandColors[cellLoc.brand] : null;
+                    const brandStyle = cellLoc.brand ? brandColors[cellLoc.brand] : null;
                     const isMatch = filtering && matchSet.has(code);
                     const isDimmed = filtering && !isMatch;
                     const refs = referencedBins[code];
@@ -330,7 +333,11 @@ export default function BinMap({ data }) {
                         className={className}
                         onClick={() => cellLoc.status !== "blocked" && setSelected(code)}
                         title={titleParts.join(" — ")}
-                        style={brandColor ? { borderTop: `3px solid ${brandColor}` } : undefined}
+                        style={
+                          brandStyle
+                            ? { borderTop: `3px ${brandStyle.pattern} ${brandStyle.color}` }
+                            : undefined
+                        }
                       >
                         {refs && refs.length > 0 && <span className="flag-badge">!</span>}
                         {cellLoc.status === "blocked" ? "" : cellLoc.qty > 0 ? cellLoc.qty : ""}
@@ -364,7 +371,7 @@ export default function BinMap({ data }) {
                   <div className="entry-card" key={i}>
                     <div className="entry-card-top">
                       {e.brand ? (
-                        <span className="brand-tag" style={{ background: brandColors[e.brand] || "#999" }}>
+                        <span className="brand-tag" style={{ background: brandColors[e.brand]?.color || "#999" }}>
                           {e.brand}
                         </span>
                       ) : (

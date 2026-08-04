@@ -93,7 +93,7 @@ export default function PutawayQueue({ looseBins, brandColors }) {
                   <div className="entry-card" key={i}>
                     <div className="entry-card-top">
                       {e.brand ? (
-                        <span className="brand-tag" style={{ background: brandColors[e.brand] || "#999" }}>
+                        <span className="brand-tag" style={{ background: brandColors[e.brand]?.color || "#999" }}>
                           {e.brand}
                         </span>
                       ) : (

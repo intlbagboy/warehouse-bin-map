@@ -123,7 +123,7 @@ export default async function Home({ searchParams }) {
                     </td>
                     <td>
                       {item.brand && (
-                        <span className="brand-tag" style={{ background: data.brandColors[item.brand] || "#999" }}>
+                        <span className="brand-tag" style={{ background: data.brandColors[item.brand]?.color || "#999" }}>
                           {item.brand}
                         </span>
                       )}
