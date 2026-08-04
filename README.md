@@ -3,7 +3,9 @@
 A live, color-coded map of the warehouse relocation tracker: occupied, needs-review,
 blocked, and empty bins, with click-through detail (license plate, SKU, item, qty).
 
-Data now comes live from a Google Sheet — no manual export/regenerate step needed.
+Data comes from either a live Google Sheet or a dropped-in NetSuite export —
+toggle between them right on the page. No manual export/regenerate step for
+the Sheets side.
 
 ## First-time setup
 
@@ -90,24 +92,59 @@ link-shared), that requires switching to an authenticated fetch (a Google Cloud
 service account with Sheets API access) instead of the anonymous CSV export this
 app currently uses — a bigger change, let me know if you want that instead.
 
+## Two data sources: Google Sheets and NetSuite
+
+The site can show either of two views, switched with the toggle at the top of
+the page (`?source=sheets` or `?source=netsuite` in the URL):
+
+- **Google Sheets** — your manually-tracked relocation data (Transfer Log,
+  Needs Review, etc.), same as before.
+- **NetSuite** — a snapshot of NetSuite's own inventory-by-bin export. Since
+  NetSuite's "Bin Number" is only sometimes one of your Aisle-Spot-Level codes
+  (a lot of inventory is still sitting in staging/transfer bins, not yet on a
+  rack), only rows whose Bin Number matches a real location show up on the
+  grid. Everything else is counted in the "Not yet on a rack" stat instead of
+  being silently dropped. This mode is a good cross-check against what you've
+  tracked manually — if NetSuite and the Sheets view disagree about what's in
+  a given bin, something's off.
+
+Both modes share the same physical layout (aisles, spot counts, orientation,
+blocked spots) from the Aisle List / Spots Blocked by Beams tabs in the Google
+Sheet — only the inventory data itself differs.
+
+### Updating the NetSuite data
+
+Drop a new NetSuite export in as `data/netsuite-inventory.xlsx` (same
+filename, replacing the old one) via GitHub's "Upload files" on that file's
+page, commit, and Vercel redeploys with the new data automatically. Expected
+columns (in order): Internal ID, Name (SKU), UPC Code, Display Name
+(description), Bin Number, On Hand, Available, Location, Cost Value, Class
+(brand), Item Category. If NetSuite ever changes that column order, the
+mapping is in `lib/netsuiteData.js`.
+
 ## Deploying to Vercel
 
 1. Push this repo to GitHub (already done if you're reading this from the repo).
 2. Go to [vercel.com](https://vercel.com), click **Add New → Project**, and import
    the repo.
 3. Leave the default settings (Vercel auto-detects Next.js) and click **Deploy**.
-4. Every minute, the live page re-checks the Google Sheet — no redeploy needed to see
-   new data. You only need to redeploy if you change the code itself.
+4. In Sheets mode, the page re-checks the Google Sheet every minute — no redeploy
+   needed. In NetSuite mode, data only changes when you push a new
+   `data/netsuite-inventory.xlsx` (see above). Either way, you only need to
+   redeploy if the code itself changes.
 
 ## Project structure
 
 ```
-app/page.js             Main page — fetches live sheet data, shows stats + map
-lib/sheetData.js         Fetches + parses the Google Sheet tabs into the app's data shape
-components/BinMap.js     Interactive grid (client component)
-data/locations.json      Legacy static snapshot — no longer used by the live app
-scripts/export_data.py   Legacy: regenerates data/locations.json from the Excel file
-                          (only needed if you ever revert to the static-file approach)
+app/page.js                   Main page — fetches data (Sheets or NetSuite), stats + map
+lib/sheetData.js               Google Sheets data source (Transfer Log, Needs Review, etc.)
+lib/netsuiteData.js            NetSuite data source (reads data/netsuite-inventory.xlsx)
+lib/aisleLayout.js             Shared: aisle list, spot counts, orientation, blocked spots
+components/SourceToggle.js     The Google Sheets / NetSuite switcher
+components/BinMap.js           Interactive grid (client component) — same for both sources
+data/netsuite-inventory.xlsx   Drop-in NetSuite export — replace this file to update
+data/locations.json            Legacy static snapshot — no longer used
+scripts/export_data.py         Legacy: regenerated data/locations.json from Excel
 ```
 
 ## Note on `npm audit`
