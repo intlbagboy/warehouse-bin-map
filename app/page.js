@@ -3,6 +3,7 @@ import { getWarehouseData } from "../lib/sheetData";
 import { getNetSuiteData } from "../lib/netsuiteData";
 import BinMap from "../components/BinMap";
 import SourceToggle from "../components/SourceToggle";
+import PutawayQueue from "../components/PutawayQueue";
 
 function computeStats(data) {
   const values = Object.values(data.locations);
@@ -85,13 +86,17 @@ export default async function Home({ searchParams }) {
         </div>
         {source === "netsuite" && (
           <div className="stat-card">
-            <div className="stat-label">Not yet on a rack (per NetSuite)</div>
+            <div className="stat-label">Not yet on a rack (Putaway Queue below)</div>
             <div className="stat-value">{(data.unmatchedCount || 0).toLocaleString()}</div>
           </div>
         )}
       </div>
 
       <BinMap data={data} />
+
+      {source === "netsuite" && data.looseBins && data.looseBins.length > 0 && (
+        <PutawayQueue looseBins={data.looseBins} brandColors={data.brandColors} />
+      )}
 
       {data.actionItems && data.actionItems.length > 0 && (
         <div className="action-items">

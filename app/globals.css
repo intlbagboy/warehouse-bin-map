@@ -428,6 +428,80 @@ h1 {
   font-size: 13px;
 }
 
+.putaway-queue {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.putaway-header {
+  margin-bottom: 14px;
+}
+
+.putaway-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.putaway-layout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.putaway-grid {
+  flex: 1 1 480px;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-content: flex-start;
+}
+
+.putaway-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  border: 1px solid #ccc;
+  background: #fff;
+  border-radius: 8px;
+  padding: 8px 12px;
+  min-width: 90px;
+  cursor: pointer;
+}
+
+.putaway-chip:hover {
+  border-color: #1F4E78;
+}
+
+.putaway-chip.selected {
+  border-color: #1a1a1a;
+  background: #f5f5f4;
+}
+
+.putaway-chip-bin {
+  font-family: "SF Mono", Consolas, Monaco, monospace;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.putaway-chip-qty {
+  font-size: 11px;
+  color: #666;
+}
+
+.putaway-more {
+  flex-basis: 100%;
+  font-size: 13px;
+  padding-top: 6px;
+}
+
 .map-layout {
   display: flex;
   gap: 20px;
