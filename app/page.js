@@ -16,6 +16,54 @@ function computeStats(data) {
   return { total, blocked, usable, occupied, review, empty };
 }
 
+function MixedTable({ title, subtitle, bins, color, brandColors }) {
+  if (!bins || bins.length === 0) return null;
+  return (
+    <div className="mixed-bins" style={{ borderColor: color }}>
+      <div className="mixed-bins-title" style={{ color }}>
+        {title} — {bins.length} bin{bins.length === 1 ? "" : "s"}
+        {subtitle && <span className="mixed-bins-subtitle"> ({subtitle})</span>}
+      </div>
+      <table className="entry-table">
+        <thead>
+          <tr>
+            <th>Bin</th>
+            <th>Brand</th>
+            <th>Styles</th>
+            <th>Colors</th>
+            <th className="col-qty">Qty</th>
+          </tr>
+        </thead>
+        <tbody>
+          {bins.map((b, i) => (
+            <tr key={i}>
+              <td>
+                <span className="code-badge">{b.location}</span>
+              </td>
+              <td>
+                {[...new Set(b.entries.map((e) => e.brand).filter(Boolean))].map((brand) => (
+                  <span
+                    key={brand}
+                    className="brand-tag"
+                    style={{ background: brandColors[brand]?.color || "#999", marginRight: 4 }}
+                  >
+                    {brand}
+                  </span>
+                ))}
+              </td>
+              <td>{b.styles.join(", ")}</td>
+              <td>{b.colors.join(", ") || "—"}</td>
+              <td className="col-qty qty-value">
+                {b.entries.reduce((sum, e) => sum + (e.qty || 0), 0).toLocaleString()}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export default async function Home({ searchParams }) {
   const sp = (await searchParams) || {};
   const source = sp.source === "netsuite" ? "netsuite" : "sheets";
@@ -100,50 +148,21 @@ export default async function Home({ searchParams }) {
 
       <BinMap data={data} />
 
-      {data.mixedBins && data.mixedBins.length > 0 && (
-        <div className="mixed-bins">
-          <div className="mixed-bins-title">
-            Mixed contents — {data.mixedBins.length} bin{data.mixedBins.length === 1 ? "" : "s"} with more than one
-            style or color
-          </div>
-          <table className="entry-table">
-            <thead>
-              <tr>
-                <th>Bin</th>
-                <th>Brand</th>
-                <th>Styles</th>
-                <th>Colors</th>
-                <th className="col-qty">Qty</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.mixedBins.map((b, i) => (
-                <tr key={i}>
-                  <td>
-                    <span className="code-badge">{b.location}</span>
-                  </td>
-                  <td>
-                    {[...new Set(b.entries.map((e) => e.brand).filter(Boolean))].map((brand) => (
-                      <span
-                        key={brand}
-                        className="brand-tag"
-                        style={{ background: data.brandColors[brand]?.color || "#999", marginRight: 4 }}
-                      >
-                        {brand}
-                      </span>
-                    ))}
-                  </td>
-                  <td>{b.styles.join(", ")}</td>
-                  <td>{b.colors.join(", ") || "—"}</td>
-                  <td className="col-qty qty-value">
-                    {b.entries.reduce((sum, e) => sum + (e.qty || 0), 0).toLocaleString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <MixedTable
+        title="Mixed styles"
+        subtitle="different products sharing a bin — the bigger issue"
+        bins={(data.mixedBins || []).filter((b) => b.styleCount > 1)}
+        color="#c2410c"
+        brandColors={data.brandColors}
+      />
+
+      <MixedTable
+        title="Mixed colors"
+        subtitle="same style, different colors, in one bin"
+        bins={(data.mixedBins || []).filter((b) => b.styleCount <= 1 && b.colorCount > 1)}
+        color="#a16207"
+        brandColors={data.brandColors}
+      />
 
       {source === "netsuite" && data.looseBins && data.looseBins.length > 0 && (
         <PutawayQueue looseBins={data.looseBins} brandColors={data.brandColors} />

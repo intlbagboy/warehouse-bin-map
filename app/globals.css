@@ -380,6 +380,12 @@ h1 {
   color: #3730a3;
 }
 
+.mixed-bins-subtitle {
+  font-weight: 400;
+  font-size: 13px;
+  color: #6b7280;
+}
+
 .flag-badge {
   position: absolute;
   top: 2px;
