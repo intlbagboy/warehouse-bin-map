@@ -1,7 +1,35 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef, Fragment } from "react";
-import { splitDescription, computeMixedFlag } from "../lib/textUtils";
+
+// Item descriptions are formatted "Base Name - Color" (e.g.
+// "Stowaway 45L Duffel - Spruce"). Split on the last " - " so base names that
+// happen to contain dashes elsewhere aren't broken.
+//
+// NOTE: this is intentionally duplicated from lib/serverTextUtils.js rather
+// than imported from a shared module. Sharing one file between this client
+// component and the server-side data modules (sheetData.js/netsuiteData.js)
+// previously caused a "module not found in the React Client Manifest" crash
+// in production on Vercel (not reproducible in local builds) — keeping
+// client and server code fully separate avoids that class of bug entirely.
+function splitDescription(desc) {
+  if (!desc) return { base: "", color: "" };
+  const idx = desc.lastIndexOf(" - ");
+  if (idx === -1) return { base: desc.trim(), color: "" };
+  return { base: desc.slice(0, idx).trim(), color: desc.slice(idx + 3).trim() };
+}
+
+function computeMixedFlag(entries) {
+  const styles = new Set();
+  const colors = new Set();
+  for (const e of entries) {
+    const { base, color } = splitDescription(e.description);
+    if (base) styles.add(base);
+    if (color) colors.add(color);
+  }
+  const isMixed = styles.size > 1 || colors.size > 1;
+  return { isMixed, styleCount: styles.size, colorCount: colors.size, styles: [...styles], colors: [...colors] };
+}
 
 const STATUS_OPTIONS = [
   { key: "occupied", label: "Occupied", color: "#c6efce" },
