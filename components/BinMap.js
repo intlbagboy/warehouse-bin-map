@@ -314,8 +314,13 @@ export default function BinMap({ data }) {
         </div>
 
         <div className="legend flag-legend">
-          <span className="mixed-dot-sample" />
-          <span className="muted">Mixed styles or colors in one bin</span>
+          <span className="mixed-dot-sample" style={{ background: "linear-gradient(135deg, transparent 50%, #f97316 50%)" }} />
+          <span className="muted">Mixed styles in one bin</span>
+        </div>
+
+        <div className="legend flag-legend">
+          <span className="mixed-dot-sample" style={{ background: "linear-gradient(135deg, transparent 50%, #eab308 50%)" }} />
+          <span className="muted">Same style, mixed colors, in one bin</span>
         </div>
 
         {brands.length > 0 && (
@@ -372,10 +377,12 @@ export default function BinMap({ data }) {
                     if (isDimmed) className += " dimmed";
                     if (refs && refs.length > 0) className += " flagged";
                     if (cellLoc.mixed) className += " mixed-contents";
+                    const mixedIsStyles = cellLoc.mixedStyleCount > 1;
+                    const mixedColor = mixedIsStyles ? "#f97316" : "#eab308";
                     const titleParts = [code];
                     if (cellLoc.brand) titleParts.push(cellLoc.brand);
                     if (refs && refs.length > 0) titleParts.push("mentioned in another bin's note — click for details");
-                    if (cellLoc.mixed) titleParts.push("mixed styles/colors — click for details");
+                    if (cellLoc.mixed) titleParts.push(mixedIsStyles ? "mixed styles — click for details" : "mixed colors — click for details");
                     return (
                       <div
                         key={code}
@@ -389,7 +396,12 @@ export default function BinMap({ data }) {
                         }
                       >
                         {refs && refs.length > 0 && <span className="flag-badge">!</span>}
-                        {cellLoc.mixed && <span className="mixed-dot" />}
+                        {cellLoc.mixed && (
+                          <span
+                            className="mixed-dot"
+                            style={{ background: `linear-gradient(135deg, transparent 50%, ${mixedColor} 50%)` }}
+                          />
+                        )}
                         {cellLoc.status === "blocked" ? "" : cellLoc.qty > 0 ? cellLoc.qty : ""}
                       </div>
                     );
@@ -415,7 +427,10 @@ export default function BinMap({ data }) {
               </div>
 
               {loc && loc.mixed && (
-                <div className="mixed-note">
+                <div
+                  className="mixed-note"
+                  style={{ borderLeftColor: computeMixedFlag(loc.entries).styleCount > 1 ? "#f97316" : "#eab308" }}
+                >
                   {(() => {
                     const m = computeMixedFlag(loc.entries);
                     const parts = [];

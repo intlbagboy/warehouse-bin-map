@@ -225,6 +225,7 @@ h1 {
   cursor: pointer;
   transition: opacity 150ms ease, filter 150ms ease;
   background: #fff;
+  position: relative;
 }
 
 .cell.occupied {
@@ -338,7 +339,6 @@ h1 {
   right: 0;
   width: 13px;
   height: 13px;
-  background: linear-gradient(135deg, transparent 50%, #eab308 50%);
   border-bottom-right-radius: 3px;
   z-index: 3;
   pointer-events: none;
