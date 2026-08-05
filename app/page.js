@@ -16,8 +16,6 @@ function computeStats(data) {
   return { total, blocked, usable, occupied, review, empty };
 }
 
-export const dynamic = "force-dynamic";
-
 export default async function Home({ searchParams }) {
   const sp = (await searchParams) || {};
   const source = sp.source === "netsuite" ? "netsuite" : "sheets";
