@@ -335,20 +335,24 @@ h1 {
 .mixed-dot {
   position: absolute;
   bottom: 2px;
-  left: 2px;
-  width: 7px;
-  height: 7px;
+  right: 2px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: #4f46e5;
-  z-index: 2;
+  border: 1.5px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+  z-index: 3;
 }
 
 .mixed-dot-sample {
   display: inline-block;
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: #4f46e5;
+  border: 1.5px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
   margin-right: 6px;
   vertical-align: middle;
 }
