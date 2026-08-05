@@ -243,6 +243,7 @@ export default function BinMap({ data }) {
   return (
     <div className="map-layout">
       <div className="map-main">
+        <div className="canvas-controls">
         <div className="search-bar">
           <div className="search-input-wrap">
             <input
@@ -339,6 +340,7 @@ export default function BinMap({ data }) {
             ))}
           </div>
         )}
+        </div>
 
         {aisles.map((aisle) => {
           const spotOrder = aisle.flipped
