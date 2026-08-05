@@ -2,64 +2,104 @@
 
 import { useState, useMemo } from "react";
 
-const DIMENSIONS = [
-  { key: "byBrand", label: "Brand" },
-  { key: "byStyle", label: "Style" },
-  { key: "byColor", label: "Color" },
+const LEVELS = [
+  { key: "brand", label: "Brand" },
+  { key: "style", label: "Style" },
+  { key: "color", label: "Color" },
 ];
 
-export default function DrillDown({ drillDown }) {
-  const [dimension, setDimension] = useState("byBrand");
+function aggregate(entries, key) {
+  const map = new Map();
+  for (const e of entries) {
+    const name = e[key];
+    if (!map.has(name)) map.set(name, { onRack: 0, queue: 0 });
+    const b = map.get(name);
+    if (e.matched) b.onRack += e.qty;
+    else b.queue += e.qty;
+  }
+  return [...map.entries()]
+    .map(([name, v]) => ({
+      name,
+      onRack: v.onRack,
+      queue: v.queue,
+      total: v.onRack + v.queue,
+      pct: v.onRack + v.queue > 0 ? v.onRack / (v.onRack + v.queue) : 0,
+    }))
+    .sort((a, b) => b.total - a.total);
+}
+
+export default function DrillDown({ entries }) {
+  const [path, setPath] = useState([]); // e.g. ["Eddie Bauer", "Stowaway 45L Duffel"]
   const [query, setQuery] = useState("");
 
-  const rows = drillDown?.[dimension] || [];
+  const level = LEVELS[path.length];
+  const canDrillDeeper = path.length < LEVELS.length - 1;
+
+  const filteredEntries = useMemo(() => {
+    return entries.filter((e) => path.every((val, i) => e[LEVELS[i].key] === val));
+  }, [entries, path]);
+
+  const rows = useMemo(() => aggregate(filteredEntries, level.key), [filteredEntries, level]);
+
   const normalizedQuery = query.trim().toLowerCase();
-  const filtered = useMemo(() => {
+  const shownRows = useMemo(() => {
     if (!normalizedQuery) return rows;
     return rows.filter((r) => r.name.toLowerCase().includes(normalizedQuery));
   }, [rows, normalizedQuery]);
 
   const totals = useMemo(() => {
-    const onRack = filtered.reduce((s, r) => s + r.onRack, 0);
-    const queue = filtered.reduce((s, r) => s + r.queue, 0);
+    const onRack = shownRows.reduce((s, r) => s + r.onRack, 0);
+    const queue = shownRows.reduce((s, r) => s + r.queue, 0);
     const total = onRack + queue;
     return { onRack, queue, total, pct: total > 0 ? onRack / total : 0 };
-  }, [filtered]);
+  }, [shownRows]);
 
-  const dimLabel = DIMENSIONS.find((d) => d.key === dimension)?.label || "";
+  function drillInto(name) {
+    if (!canDrillDeeper) return;
+    setPath([...path, name]);
+    setQuery("");
+  }
+
+  function jumpTo(index) {
+    // index === -1 means back to the very top (all brands)
+    setPath(path.slice(0, index + 1));
+    setQuery("");
+  }
 
   return (
     <div className="drilldown">
-      <div className="drilldown-header">
-        <div className="dim-switch">
-          {DIMENSIONS.map((d) => (
-            <button
-              key={d.key}
-              className={`dim-btn${dimension === d.key ? " active" : ""}`}
-              onClick={() => setDimension(d.key)}
-            >
-              {d.label}
+      <div className="drilldown-breadcrumb">
+        <button className="crumb" onClick={() => jumpTo(-1)}>
+          All brands
+        </button>
+        {path.map((val, i) => (
+          <span key={i}>
+            <span className="crumb-sep">›</span>
+            <button className="crumb" onClick={() => jumpTo(i)}>
+              {val}
             </button>
-          ))}
-        </div>
-        <input
-          type="text"
-          className="search-input drilldown-search"
-          placeholder={`Filter by ${dimLabel.toLowerCase()}…`}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
+          </span>
+        ))}
       </div>
 
+      <input
+        type="text"
+        className="search-input drilldown-search"
+        placeholder={`Filter by ${level.label.toLowerCase()}…`}
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
+
       <div className="drilldown-summary">
-        {filtered.length} {dimLabel.toLowerCase()}{filtered.length === 1 ? "" : "s"} shown — {totals.onRack.toLocaleString()} on
-        racks / {totals.total.toLocaleString()} total ({(totals.pct * 100).toFixed(1)}% putaway complete)
+        {shownRows.length} {level.label.toLowerCase()}
+        {shownRows.length === 1 ? "" : "s"} shown — {totals.onRack.toLocaleString()} on racks /{" "}
+        {totals.total.toLocaleString()} total ({(totals.pct * 100).toFixed(1)}% putaway complete)
       </div>
 
       <table className="entry-table drilldown-table">
         <thead>
           <tr>
-            <th>{dimLabel}</th>
+            <th>{level.label}</th>
             <th className="col-qty">On racks</th>
             <th className="col-qty">Putaway queue</th>
             <th className="col-qty">Total</th>
@@ -67,9 +107,16 @@ export default function DrillDown({ drillDown }) {
           </tr>
         </thead>
         <tbody>
-          {filtered.map((r) => (
-            <tr key={r.name}>
-              <td>{r.name}</td>
+          {shownRows.map((r) => (
+            <tr
+              key={r.name}
+              className={canDrillDeeper ? "drilldown-row-clickable" : ""}
+              onClick={() => drillInto(r.name)}
+            >
+              <td>
+                {r.name}
+                {canDrillDeeper && <span className="drill-arrow"> ›</span>}
+              </td>
               <td className="col-qty qty-value">{r.onRack.toLocaleString()}</td>
               <td className="col-qty qty-value">{r.queue.toLocaleString()}</td>
               <td className="col-qty qty-value">{r.total.toLocaleString()}</td>
@@ -83,10 +130,10 @@ export default function DrillDown({ drillDown }) {
               </td>
             </tr>
           ))}
-          {filtered.length === 0 && (
+          {shownRows.length === 0 && (
             <tr>
               <td colSpan={5} className="muted">
-                No {dimLabel.toLowerCase()} matches &quot;{query}&quot;.
+                No {level.label.toLowerCase()} matches &quot;{query}&quot;.
               </td>
             </tr>
           )}

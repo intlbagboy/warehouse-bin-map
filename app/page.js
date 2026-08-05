@@ -159,7 +159,7 @@ export default async function Home({ searchParams }) {
   if (source === "netsuite" && data.looseBins && data.looseBins.length > 0) {
     tabs.push({ key: "putaway", label: `Putaway Queue (${data.looseBins.length})` });
   }
-  if (source === "netsuite" && data.drillDown) {
+  if (source === "netsuite" && data.drillDownEntries && data.drillDownEntries.length > 0) {
     tabs.push({ key: "drilldown", label: "Drill Down" });
   }
   if (data.actionItems && data.actionItems.length > 0) {
@@ -259,8 +259,8 @@ export default async function Home({ searchParams }) {
         <PutawayQueue looseBins={data.looseBins} brandColors={data.brandColors} />
       )}
 
-      {activeTab === "drilldown" && source === "netsuite" && data.drillDown && (
-        <DrillDown drillDown={data.drillDown} />
+      {activeTab === "drilldown" && source === "netsuite" && data.drillDownEntries && data.drillDownEntries.length > 0 && (
+        <DrillDown entries={data.drillDownEntries} />
       )}
 
       {activeTab === "actions" && <ActionItemsTable data={data} />}
