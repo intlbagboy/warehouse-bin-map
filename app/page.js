@@ -150,7 +150,7 @@ export default async function Home({ searchParams }) {
 
       <MixedTable
         title="Mixed styles"
-        subtitle="different products sharing a bin — the bigger issue"
+        subtitle="different products sharing a bin"
         bins={(data.mixedBins || []).filter((b) => b.styleCount > 1)}
         color="#c2410c"
         brandColors={data.brandColors}
