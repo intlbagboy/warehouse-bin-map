@@ -47,7 +47,7 @@ export default async function Home({ searchParams }) {
       <SourceToggle current={source} />
 
       <p className="subtitle">
-        {source === "netsuite" ? "From NetSuite export, uploaded" : "Live from Google Sheets — last checked"}{" "}
+        {source === "netsuite" ? "From NetSuite export — site last rebuilt" : "Live from Google Sheets — last checked"}{" "}
         {new Date(data.generatedAt).toLocaleString("en-US", {
           timeZone: "America/Chicago",
           dateStyle: "short",
