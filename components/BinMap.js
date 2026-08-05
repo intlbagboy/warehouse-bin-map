@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef, Fragment } from "react";
-import { splitDescription, computeMixedFlag } from "../lib/textUtils";
 
 const STATUS_OPTIONS = [
   { key: "occupied", label: "Occupied", color: "#c6efce" },
@@ -13,6 +12,16 @@ const STATUS_OPTIONS = [
 function entryMatchesText(entry, query) {
   const haystacks = [entry.sku, entry.description, entry.brand, entry.licensePlate];
   return haystacks.some((h) => h && h.toLowerCase().includes(query));
+}
+
+// Item descriptions in the sheet are formatted "Base Name - Color" (e.g.
+// "Stowaway 45L Duffel - Spruce"). Split on the last " - " so base names that
+// happen to contain dashes elsewhere aren't broken.
+function splitDescription(desc) {
+  if (!desc) return { base: "", color: "" };
+  const idx = desc.lastIndexOf(" - ");
+  if (idx === -1) return { base: desc.trim(), color: "" };
+  return { base: desc.slice(0, idx).trim(), color: desc.slice(idx + 3).trim() };
 }
 
 function SearchableSelect({ label, options, value, onChange }) {
@@ -262,11 +271,6 @@ export default function BinMap({ data }) {
           <span className="muted">Mentioned in another bin&apos;s action-item note — may not be where it belongs</span>
         </div>
 
-        <div className="legend flag-legend">
-          <span className="mixed-dot-sample" />
-          <span className="muted">Mixed styles or colors in one bin</span>
-        </div>
-
         {brands.length > 0 && (
           <div className="legend brand-legend">
             <span className="muted" style={{ marginRight: 4 }}>
@@ -320,11 +324,9 @@ export default function BinMap({ data }) {
                     if (isMatch) className += " match";
                     if (isDimmed) className += " dimmed";
                     if (refs && refs.length > 0) className += " flagged";
-                    if (cellLoc.mixed) className += " mixed-contents";
                     const titleParts = [code];
                     if (cellLoc.brand) titleParts.push(cellLoc.brand);
                     if (refs && refs.length > 0) titleParts.push("mentioned in another bin's note — click for details");
-                    if (cellLoc.mixed) titleParts.push("mixed styles/colors — click for details");
                     return (
                       <div
                         key={code}
@@ -338,7 +340,6 @@ export default function BinMap({ data }) {
                         }
                       >
                         {refs && refs.length > 0 && <span className="flag-badge">!</span>}
-                        {cellLoc.mixed && <span className="mixed-dot" />}
                         {cellLoc.status === "blocked" ? "" : cellLoc.qty > 0 ? cellLoc.qty : ""}
                       </div>
                     );
@@ -362,18 +363,6 @@ export default function BinMap({ data }) {
                 <span className="panel-label">Bin</span>
                 <span className="panel-code">{selected}</span>
               </div>
-
-              {loc && loc.mixed && (
-                <div className="mixed-note">
-                  {(() => {
-                    const m = computeMixedFlag(loc.entries);
-                    const parts = [];
-                    if (m.styleCount > 1) parts.push(`${m.styleCount} styles`);
-                    if (m.colorCount > 1) parts.push(`${m.colorCount} colors`);
-                    return `Mixed contents — ${parts.join(", ")}`;
-                  })()}
-                </div>
-              )}
 
               {!loc || loc.entries.length === 0 ? (
                 <div className="muted">Empty</div>

@@ -84,12 +84,6 @@ export default async function Home({ searchParams }) {
           <div className="stat-label">% complete</div>
           <div className="stat-value">{pctComplete.toFixed(1)}%</div>
         </div>
-        {data.mixedBins && data.mixedBins.length > 0 && (
-          <div className="stat-card">
-            <div className="stat-label">Mixed styles/colors (list below)</div>
-            <div className="stat-value">{data.mixedBins.length}</div>
-          </div>
-        )}
         {source === "netsuite" && (
           <div className="stat-card">
             <div className="stat-label">Not yet on a rack (Putaway Queue below)</div>
@@ -99,51 +93,6 @@ export default async function Home({ searchParams }) {
       </div>
 
       <BinMap data={data} />
-
-      {data.mixedBins && data.mixedBins.length > 0 && (
-        <div className="mixed-bins">
-          <div className="mixed-bins-title">
-            Mixed contents — {data.mixedBins.length} bin{data.mixedBins.length === 1 ? "" : "s"} with more than one
-            style or color
-          </div>
-          <table className="entry-table">
-            <thead>
-              <tr>
-                <th>Bin</th>
-                <th>Brand</th>
-                <th>Styles</th>
-                <th>Colors</th>
-                <th className="col-qty">Qty</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.mixedBins.map((b, i) => (
-                <tr key={i}>
-                  <td>
-                    <span className="code-badge">{b.location}</span>
-                  </td>
-                  <td>
-                    {[...new Set(b.entries.map((e) => e.brand).filter(Boolean))].map((brand) => (
-                      <span
-                        key={brand}
-                        className="brand-tag"
-                        style={{ background: data.brandColors[brand]?.color || "#999", marginRight: 4 }}
-                      >
-                        {brand}
-                      </span>
-                    ))}
-                  </td>
-                  <td>{b.styles.join(", ")}</td>
-                  <td>{b.colors.join(", ") || "—"}</td>
-                  <td className="col-qty qty-value">
-                    {b.entries.reduce((sum, e) => sum + (e.qty || 0), 0).toLocaleString()}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
 
       {source === "netsuite" && data.looseBins && data.looseBins.length > 0 && (
         <PutawayQueue looseBins={data.looseBins} brandColors={data.brandColors} />
