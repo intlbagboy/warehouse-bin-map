@@ -8,6 +8,23 @@ const LEVELS = [
   { key: "color", label: "Color" },
 ];
 
+// Red -> amber -> green, interpolated smoothly rather than in hard buckets,
+// so 40% and 60% read as visibly different, not just "both yellow-ish."
+const RED = [220, 38, 38];
+const AMBER = [217, 119, 6];
+const GREEN = [5, 150, 105];
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+function pctColor(pct) {
+  const stops = pct <= 0.5 ? [RED, AMBER, pct / 0.5] : [AMBER, GREEN, (pct - 0.5) / 0.5];
+  const [from, to, t] = stops;
+  const rgb = from.map((c, i) => Math.round(lerp(c, to[i], t)));
+  return `rgb(${rgb.join(",")})`;
+}
+
 function aggregate(entries, key) {
   const map = new Map();
   for (const e of entries) {
@@ -123,9 +140,14 @@ export default function DrillDown({ entries }) {
               <td className="col-pct">
                 <div className="pct-bar-wrap">
                   <div className="pct-bar-track">
-                    <div className="pct-bar-fill" style={{ width: `${Math.round(r.pct * 100)}%` }} />
+                    <div
+                      className="pct-bar-fill"
+                      style={{ width: `${Math.round(r.pct * 100)}%`, background: pctColor(r.pct) }}
+                    />
                   </div>
-                  <span className="pct-bar-label">{(r.pct * 100).toFixed(0)}%</span>
+                  <span className="pct-bar-label" style={{ color: pctColor(r.pct) }}>
+                    {(r.pct * 100).toFixed(0)}%
+                  </span>
                 </div>
               </td>
             </tr>

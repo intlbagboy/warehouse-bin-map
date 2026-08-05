@@ -7,6 +7,19 @@ import TabBar from "../components/TabBar";
 import PutawayQueue from "../components/PutawayQueue";
 import DrillDown from "../components/DrillDown";
 
+// Same red -> amber -> green interpolation as components/DrillDown.js,
+// intentionally duplicated rather than shared — see BinMap.js's note on why
+// client/server code stays fully separate in this app.
+const PCT_RED = [220, 38, 38];
+const PCT_AMBER = [217, 119, 6];
+const PCT_GREEN = [5, 150, 105];
+function pctColor(pct) {
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const [from, to, t] = pct <= 0.5 ? [PCT_RED, PCT_AMBER, pct / 0.5] : [PCT_AMBER, PCT_GREEN, (pct - 0.5) / 0.5];
+  const rgb = from.map((c, i) => Math.round(lerp(c, to[i], t)));
+  return `rgb(${rgb.join(",")})`;
+}
+
 function computeStats(data) {
   const values = Object.values(data.locations);
   const total = values.length;
@@ -209,7 +222,9 @@ export default async function Home({ searchParams }) {
         </div>
         <div className="stat-card">
           <div className="stat-label">% complete</div>
-          <div className="stat-value">{pctComplete.toFixed(1)}%</div>
+          <div className="stat-value" style={{ color: pctColor(pctComplete / 100) }}>
+            {pctComplete.toFixed(1)}%
+          </div>
         </div>
         {mixedStyleBins.length > 0 && (
           <a href={`/?source=${source}&tab=mixedstyles`} className="stat-card stat-card-link">
