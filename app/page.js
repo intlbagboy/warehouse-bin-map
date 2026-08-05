@@ -124,7 +124,7 @@ function ActionItemsTable({ data }) {
 
 export default async function Home({ searchParams }) {
   const sp = (await searchParams) || {};
-  const source = sp.source === "netsuite" ? "netsuite" : "sheets";
+  const source = sp.source === "sheets" ? "sheets" : "netsuite";
 
   let data;
   let error;
