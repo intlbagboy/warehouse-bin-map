@@ -114,13 +114,21 @@ Sheet — only the inventory data itself differs.
 
 ### Updating the NetSuite data
 
-Drop a new NetSuite export in as `data/netsuite-inventory.xlsx` (same
-filename, replacing the old one) via GitHub's "Upload files" on that file's
-page, commit, and Vercel redeploys with the new data automatically. Expected
-columns (in order): Internal ID, Name (SKU), UPC Code, Display Name
-(description), Bin Number, On Hand, Available, Location, Cost Value, Class
-(brand), Item Category. If NetSuite ever changes that column order, the
-mapping is in `lib/netsuiteData.js`.
+**Automated (recommended):** NetSuite's saved search is scheduled to email a
+CSV export daily. A Zapier automation watches for that email, grabs the
+attachment, and commits it to this repo as `data/netsuite-inventory.csv`,
+which triggers a Vercel redeploy automatically — no manual steps.
+
+**Manual (if needed):** drop a new NetSuite CSV export in as
+`data/netsuite-inventory.csv` (same filename, replacing the old one) via
+GitHub's "Upload files" on that file's page, commit, and Vercel redeploys
+automatically.
+
+Expected columns: Name (SKU), Display Name (description), Bin Number, On
+Hand, Class (brand). Columns are matched by **header name**, not position, so
+NetSuite reordering or adding columns won't break anything — only a renamed
+header would. The mapping is in `lib/netsuiteData.js`
+(`COLUMN_ALIASES`) if that ever needs adjusting.
 
 ## Deploying to Vercel
 
@@ -130,7 +138,7 @@ mapping is in `lib/netsuiteData.js`.
 3. Leave the default settings (Vercel auto-detects Next.js) and click **Deploy**.
 4. In Sheets mode, the page re-checks the Google Sheet every minute — no redeploy
    needed. In NetSuite mode, data only changes when you push a new
-   `data/netsuite-inventory.xlsx` (see above). Either way, you only need to
+   `data/netsuite-inventory.csv` (see above). Either way, you only need to
    redeploy if the code itself changes.
 
 ## Project structure
@@ -138,11 +146,11 @@ mapping is in `lib/netsuiteData.js`.
 ```
 app/page.js                   Main page — fetches data (Sheets or NetSuite), stats + map
 lib/sheetData.js               Google Sheets data source (Transfer Log, Needs Review, etc.)
-lib/netsuiteData.js            NetSuite data source (reads data/netsuite-inventory.xlsx)
+lib/netsuiteData.js            NetSuite data source (reads data/netsuite-inventory.csv)
 lib/aisleLayout.js             Shared: aisle list, spot counts, orientation, blocked spots
 components/SourceToggle.js     The Google Sheets / NetSuite switcher
 components/BinMap.js           Interactive grid (client component) — same for both sources
-data/netsuite-inventory.xlsx   Drop-in NetSuite export — replace this file to update
+data/netsuite-inventory.csv   Drop-in NetSuite export — replace this file to update
 data/locations.json            Legacy static snapshot — no longer used
 scripts/export_data.py         Legacy: regenerated data/locations.json from Excel
 ```
