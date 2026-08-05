@@ -5,6 +5,7 @@ import BinMap from "../components/BinMap";
 import SourceToggle from "../components/SourceToggle";
 import TabBar from "../components/TabBar";
 import PutawayQueue from "../components/PutawayQueue";
+import DrillDown from "../components/DrillDown";
 
 function computeStats(data) {
   const values = Object.values(data.locations);
@@ -158,6 +159,9 @@ export default async function Home({ searchParams }) {
   if (source === "netsuite" && data.looseBins && data.looseBins.length > 0) {
     tabs.push({ key: "putaway", label: `Putaway Queue (${data.looseBins.length})` });
   }
+  if (source === "netsuite" && data.drillDown) {
+    tabs.push({ key: "drilldown", label: "Drill Down" });
+  }
   if (data.actionItems && data.actionItems.length > 0) {
     tabs.push({ key: "actions", label: `Action Items (${data.actionItems.length})` });
   }
@@ -253,6 +257,10 @@ export default async function Home({ searchParams }) {
 
       {activeTab === "putaway" && source === "netsuite" && data.looseBins && data.looseBins.length > 0 && (
         <PutawayQueue looseBins={data.looseBins} brandColors={data.brandColors} />
+      )}
+
+      {activeTab === "drilldown" && source === "netsuite" && data.drillDown && (
+        <DrillDown drillDown={data.drillDown} />
       )}
 
       {activeTab === "actions" && <ActionItemsTable data={data} />}
