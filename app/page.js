@@ -3,6 +3,7 @@ import { getWarehouseData } from "../lib/sheetData";
 import { getNetSuiteData } from "../lib/netsuiteData";
 import BinMap from "../components/BinMap";
 import SourceToggle from "../components/SourceToggle";
+import TabBar from "../components/TabBar";
 import PutawayQueue from "../components/PutawayQueue";
 
 function computeStats(data) {
@@ -64,6 +65,62 @@ function MixedTable({ title, subtitle, bins, color, brandColors }) {
   );
 }
 
+function ActionItemsTable({ data }) {
+  if (!data.actionItems || data.actionItems.length === 0) return null;
+  return (
+    <div className="action-items">
+      <div className="action-items-title">
+        Action items — {data.actionItems.length} unverified transfer
+        {data.actionItems.length === 1 ? "" : "s"}
+      </div>
+      <table className="entry-table">
+        <thead>
+          <tr>
+            <th>Bin</th>
+            <th>Brand</th>
+            <th>License plate</th>
+            <th>Item</th>
+            <th className="col-qty">Qty</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.actionItems.map((item, i) => (
+            <Fragment key={i}>
+              <tr>
+                <td>
+                  <span className="code-badge">{item.location}</span>
+                </td>
+                <td>
+                  {item.brand && (
+                    <span className="brand-tag" style={{ background: data.brandColors[item.brand]?.color || "#999" }}>
+                      {item.brand}
+                    </span>
+                  )}
+                </td>
+                <td>
+                  <span className="code-badge">{item.licensePlate}</span>
+                </td>
+                <td>
+                  <div className="item-sku">{item.sku}</div>
+                  <div className="item-desc">{item.description}</div>
+                </td>
+                <td className="col-qty qty-value">{item.qty}</td>
+              </tr>
+              <tr>
+                <td colSpan={5}>
+                  <div className="action-note">
+                    Action: {item.notes || "No note provided — check with whoever logged this transfer."}
+                  </div>
+                </td>
+              </tr>
+            </Fragment>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export default async function Home({ searchParams }) {
   const sp = (await searchParams) || {};
   const source = sp.source === "netsuite" ? "netsuite" : "sheets";
@@ -88,6 +145,24 @@ export default async function Home({ searchParams }) {
 
   const stats = computeStats(data);
   const pctComplete = stats.usable > 0 ? ((stats.occupied + stats.review) / stats.usable) * 100 : 0;
+
+  const mixedStyleBins = (data.mixedBins || []).filter((b) => b.styleCount > 1);
+  const mixedColorBins = (data.mixedBins || []).filter((b) => b.styleCount <= 1 && b.colorCount > 1);
+
+  // Tabs are built dynamically from what's actually present in the current
+  // data/source, so adding a new section later is just: add its content to
+  // this array with a condition, same as the existing ones.
+  const tabs = [{ key: "binmap", label: "Bin Map" }];
+  if (mixedStyleBins.length > 0) tabs.push({ key: "mixedstyles", label: `Mixed Styles (${mixedStyleBins.length})` });
+  if (mixedColorBins.length > 0) tabs.push({ key: "mixedcolors", label: `Mixed Colors (${mixedColorBins.length})` });
+  if (source === "netsuite" && data.looseBins && data.looseBins.length > 0) {
+    tabs.push({ key: "putaway", label: `Putaway Queue (${data.looseBins.length})` });
+  }
+  if (data.actionItems && data.actionItems.length > 0) {
+    tabs.push({ key: "actions", label: `Action Items (${data.actionItems.length})` });
+  }
+
+  const activeTab = tabs.some((t) => t.key === sp.tab) ? sp.tab : "binmap";
 
   return (
     <main>
@@ -132,94 +207,55 @@ export default async function Home({ searchParams }) {
           <div className="stat-label">% complete</div>
           <div className="stat-value">{pctComplete.toFixed(1)}%</div>
         </div>
-        {data.mixedBins && data.mixedBins.length > 0 && (
-          <div className="stat-card">
-            <div className="stat-label">Mixed styles/colors (list below)</div>
-            <div className="stat-value">{data.mixedBins.length}</div>
-          </div>
+        {mixedStyleBins.length > 0 && (
+          <a href={`/?source=${source}&tab=mixedstyles`} className="stat-card stat-card-link">
+            <div className="stat-label">Mixed styles</div>
+            <div className="stat-value">{mixedStyleBins.length}</div>
+          </a>
+        )}
+        {mixedColorBins.length > 0 && (
+          <a href={`/?source=${source}&tab=mixedcolors`} className="stat-card stat-card-link">
+            <div className="stat-label">Mixed colors</div>
+            <div className="stat-value">{mixedColorBins.length}</div>
+          </a>
         )}
         {source === "netsuite" && (
-          <div className="stat-card">
-            <div className="stat-label">Not yet on a rack (Putaway Queue below)</div>
+          <a href={`/?source=${source}&tab=putaway`} className="stat-card stat-card-link">
+            <div className="stat-label">Not yet on a rack</div>
             <div className="stat-value">{(data.unmatchedCount || 0).toLocaleString()}</div>
-          </div>
+          </a>
         )}
       </div>
 
-      <BinMap data={data} />
+      <TabBar tabs={tabs} active={activeTab} source={source} />
 
-      <MixedTable
-        title="Mixed styles"
-        subtitle="different products sharing a bin"
-        bins={(data.mixedBins || []).filter((b) => b.styleCount > 1)}
-        color="#c2410c"
-        brandColors={data.brandColors}
-      />
+      {activeTab === "binmap" && <BinMap data={data} />}
 
-      <MixedTable
-        title="Mixed colors"
-        subtitle="same style, different colors, in one bin"
-        bins={(data.mixedBins || []).filter((b) => b.styleCount <= 1 && b.colorCount > 1)}
-        color="#a16207"
-        brandColors={data.brandColors}
-      />
+      {activeTab === "mixedstyles" && (
+        <MixedTable
+          title="Mixed styles"
+          subtitle="different products sharing a bin"
+          bins={mixedStyleBins}
+          color="#c2410c"
+          brandColors={data.brandColors}
+        />
+      )}
 
-      {source === "netsuite" && data.looseBins && data.looseBins.length > 0 && (
+      {activeTab === "mixedcolors" && (
+        <MixedTable
+          title="Mixed colors"
+          subtitle="same style, different colors, in one bin"
+          bins={mixedColorBins}
+          color="#a16207"
+          brandColors={data.brandColors}
+        />
+      )}
+
+      {activeTab === "putaway" && source === "netsuite" && data.looseBins && data.looseBins.length > 0 && (
         <PutawayQueue looseBins={data.looseBins} brandColors={data.brandColors} />
       )}
 
-      {data.actionItems && data.actionItems.length > 0 && (
-        <div className="action-items">
-          <div className="action-items-title">
-            Action items — {data.actionItems.length} unverified transfer
-            {data.actionItems.length === 1 ? "" : "s"}
-          </div>
-          <table className="entry-table">
-            <thead>
-              <tr>
-                <th>Bin</th>
-                <th>Brand</th>
-                <th>License plate</th>
-                <th>Item</th>
-                <th className="col-qty">Qty</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.actionItems.map((item, i) => (
-                <Fragment key={i}>
-                  <tr>
-                    <td>
-                      <span className="code-badge">{item.location}</span>
-                    </td>
-                    <td>
-                      {item.brand && (
-                        <span className="brand-tag" style={{ background: data.brandColors[item.brand]?.color || "#999" }}>
-                          {item.brand}
-                        </span>
-                      )}
-                    </td>
-                    <td>
-                      <span className="code-badge">{item.licensePlate}</span>
-                    </td>
-                    <td>
-                      <div className="item-sku">{item.sku}</div>
-                      <div className="item-desc">{item.description}</div>
-                    </td>
-                    <td className="col-qty qty-value">{item.qty}</td>
-                  </tr>
-                  <tr>
-                    <td colSpan={5}>
-                      <div className="action-note">
-                        Action: {item.notes || "No note provided — check with whoever logged this transfer."}
-                      </div>
-                    </td>
-                  </tr>
-                </Fragment>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      {activeTab === "actions" && <ActionItemsTable data={data} />}
 
       <DeployInfo />
     </main>
