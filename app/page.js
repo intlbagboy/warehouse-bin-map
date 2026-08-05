@@ -55,7 +55,7 @@ export default async function Home({ searchParams }) {
         })}{" "}
         CT.{" "}
         {source === "netsuite"
-          ? "Drop a new export in as data/netsuite-inventory.xlsx and push to update."
+          ? "Drop a new export in as data/netsuite-inventory.csv and push to update."
           : "Refreshes automatically about once a minute."}
       </p>
 
@@ -201,6 +201,29 @@ export default async function Home({ searchParams }) {
           </table>
         </div>
       )}
+
+      <DeployInfo />
     </main>
+  );
+}
+
+function DeployInfo() {
+  const sha = process.env.VERCEL_GIT_COMMIT_SHA;
+  const message = process.env.VERCEL_GIT_COMMIT_MESSAGE;
+  if (!sha) return null;
+  return (
+    <div className="deploy-info">
+      Running commit <span className="code-badge">{sha.slice(0, 7)}</span>
+      {message ? ` — ${message.split("\n")[0]}` : ""}
+      {" — compare against "}
+      <a
+        href={`https://github.com/TedBeans/MoogWarehouseMap/commit/${sha}`}
+        target="_blank"
+        rel="noreferrer"
+      >
+        GitHub
+      </a>
+      {" to confirm this deployment is current."}
+    </div>
   );
 }
