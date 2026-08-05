@@ -1,20 +1,21 @@
 :root {
-  /* Neutral scale */
-  --ink: #16181d;
-  --ink-soft: #4a4b52;
-  --muted: #8b8c94;
-  --border: #e2e3e8;
-  --border-soft: #ececef;
-  --surface: #ffffff;
-  --bg: #f7f7f9;
-  --bg-subtle: #eff0f3;
+  /* Neutral scale — everything is dark/glass now, so these are the same
+     everywhere (no separate "text inside a white card" case anymore). */
+  --ink: #f2f4f8;
+  --ink-soft: #c7cdd9;
+  --muted: #9aa2b1;
+  --border: rgba(255, 255, 255, 0.1);
+  --border-soft: rgba(255, 255, 255, 0.06);
+  --surface: rgba(255, 255, 255, 0.045);
+  --surface-solid: #141c2c;
+  --bg-subtle: rgba(255, 255, 255, 0.07);
 
-  /* Accent (UI chrome) — deliberately a quiet, dark ink-navy, distinct from
-     the saturated brand-stripe and status palettes used elsewhere so it
-     never gets confused with data meaning. */
-  --accent: #273449;
-  --accent-hover: #1b2536;
-  --accent-soft: #edf1f6;
+  /* Accent (UI chrome) — a quiet sky blue, distinct from the saturated
+     brand-stripe and status palettes used elsewhere so it never gets
+     confused with data meaning. */
+  --accent: #7dd3fc;
+  --accent-hover: #a8e2ff;
+  --accent-soft: rgba(125, 211, 252, 0.14);
 
   /* Status */
   --green: #059669;
@@ -27,15 +28,15 @@
   --radius-lg: 12px;
   --radius: 10px;
   --radius-sm: 6px;
-  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 1px rgba(16, 24, 40, 0.03);
-  --shadow-md: 0 4px 16px rgba(16, 24, 40, 0.08);
+  --shadow-sm: none;
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
 
-  /* Text that sits directly on the dark page canvas (outside any white
-     card) — kept separate from --ink/--muted, which stay dark and are used
-     for text inside the (still-white) cards. */
-  --page-text: rgba(255, 255, 255, 0.95);
-  --page-text-secondary: rgba(255, 255, 255, 0.62);
-  --page-text-muted: rgba(255, 255, 255, 0.42);
+  /* Kept as aliases so existing references (h1, subtitle, deploy-info,
+     toggle, tab bar) resolve to the same values above without needing to
+     rewire every selector. */
+  --page-text: #f2f4f8;
+  --page-text-secondary: #c7cdd9;
+  --page-text-muted: #9aa2b1;
   --page-link: #7dd3fc;
 }
 
@@ -123,18 +124,22 @@ h1 {
 }
 
 .stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
   margin-bottom: 28px;
 }
 
 .stat-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px 16px;
-  box-shadow: var(--shadow-sm);
+  flex: 1 1 130px;
+  padding: 14px 18px;
+  border-right: 1px solid var(--border);
+  border-radius: 0;
+}
+
+.stat-card:last-child {
+  border-right: none;
 }
 
 .stat-card-link {
@@ -142,13 +147,11 @@ h1 {
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-  transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+  transition: background 150ms ease;
 }
 
 .stat-card-link:hover {
-  border-color: var(--accent);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .drilldown {
@@ -374,8 +377,8 @@ h1 {
   display: inline-block;
   width: 16px;
   height: 12px;
-  background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-top-width: 3px;
   border-top-style: solid;
   border-radius: 2px;
@@ -390,7 +393,7 @@ h1 {
   border-radius: 3px;
   margin-right: 6px;
   vertical-align: middle;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .aisle-block {
@@ -453,29 +456,33 @@ h1 {
   height: 28px;
   flex-shrink: 0;
   border-radius: 5px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 9px;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: opacity 150ms ease, filter 150ms ease;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.04);
   position: relative;
 }
 
 .cell.occupied {
-  background: #c6efce;
+  background: #134e35;
+  color: #8fe3bb;
 }
 .cell.review {
-  background: #ffeb9c;
+  background: #5c4a12;
+  color: #ffdd8a;
 }
 .cell.blocked {
-  background: #d9d9d9;
+  background: #34363d;
+  color: #83848c;
   cursor: default;
 }
 .cell.empty {
-  background: #fdf2f2;
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .search-bar {
@@ -586,7 +593,7 @@ h1 {
   width: 14px;
   height: 14px;
   background: linear-gradient(135deg, transparent 50%, #eab308 50%);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 3px;
   margin-right: 6px;
   vertical-align: middle;
@@ -712,7 +719,7 @@ h1 {
   top: calc(100% + 4px);
   left: 0;
   right: 0;
-  background: var(--surface);
+  background: var(--surface-solid);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   max-height: 240px;

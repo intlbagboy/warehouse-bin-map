@@ -55,10 +55,10 @@ function computeMixedFlag(entries) {
 }
 
 const STATUS_OPTIONS = [
-  { key: "occupied", label: "Occupied", color: "#c6efce" },
-  { key: "review", label: "Needs review", color: "#ffeb9c" },
-  { key: "blocked", label: "Blocked (beam)", color: "#d9d9d9" },
-  { key: "empty", label: "Empty", color: "#fdf2f2" },
+  { key: "occupied", label: "Occupied", color: "#134e35" },
+  { key: "review", label: "Needs review", color: "#5c4a12" },
+  { key: "blocked", label: "Blocked (beam)", color: "#34363d" },
+  { key: "empty", label: "Empty", color: "rgba(255,255,255,0.06)" },
 ];
 
 function entryMatchesText(entry, query) {
