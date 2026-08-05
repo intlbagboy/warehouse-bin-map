@@ -334,25 +334,23 @@ h1 {
 
 .mixed-dot {
   position: absolute;
-  bottom: 2px;
-  right: 2px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #4f46e5;
-  border: 1.5px solid #fff;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+  bottom: 0;
+  right: 0;
+  width: 13px;
+  height: 13px;
+  background: linear-gradient(135deg, transparent 50%, #eab308 50%);
+  border-bottom-right-radius: 3px;
   z-index: 3;
+  pointer-events: none;
 }
 
 .mixed-dot-sample {
   display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #4f46e5;
-  border: 1.5px solid #fff;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(135deg, transparent 50%, #eab308 50%);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
   margin-right: 6px;
   vertical-align: middle;
 }
