@@ -796,6 +796,8 @@ h1 {
   gap: 2px;
   border: 1px solid var(--border);
   background: var(--surface);
+  color: var(--ink);
+  font-family: inherit;
   border-radius: var(--radius-sm);
   padding: 8px 12px;
   min-width: 90px;
