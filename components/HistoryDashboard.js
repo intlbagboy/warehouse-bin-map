@@ -7,16 +7,24 @@ function sum(arr, fn) {
 }
 
 // Small hand-rolled SVG line chart — avoids pulling in a charting library
-// for one line. Plots % complete over time.
+// for one line. Plots % complete over time. Only days with a known total
+// (i.e. from a real NetSuite snapshot) have a pct — Sheets-logged days
+// don't have an absolute total to compute against, so they're excluded here
+// rather than plotted as a misleading 0%.
 function TrendChart({ days }) {
+  const plottable = days.filter((d) => d.pct !== null && d.pct !== undefined);
+  if (plottable.length === 0) {
+    return <div className="muted">Not enough NetSuite-snapshot days yet to chart a trend.</div>;
+  }
+
   const width = 640;
   const height = 160;
   const padding = { top: 12, right: 12, bottom: 24, left: 36 };
   const innerW = width - padding.left - padding.right;
   const innerH = height - padding.top - padding.bottom;
 
-  const points = days.map((d, i) => {
-    const x = padding.left + (days.length === 1 ? innerW / 2 : (i / (days.length - 1)) * innerW);
+  const points = plottable.map((d, i) => {
+    const x = padding.left + (plottable.length === 1 ? innerW / 2 : (i / (plottable.length - 1)) * innerW);
     const y = padding.top + innerH * (1 - d.pct);
     return { x, y, d };
   });
@@ -90,7 +98,7 @@ function DayChanges({ delta }) {
 export default function HistoryDashboard({ days, deltas }) {
   const [expandedDate, setExpandedDate] = useState(null);
 
-  const latest = days[days.length - 1];
+  const latestWithPct = [...days].reverse().find((d) => d.pct !== null && d.pct !== undefined);
   const todayPutAway = deltas.length > 0 ? deltas[deltas.length - 1].putAway : 0;
   const last7 = deltas.slice(-7);
   const last7PutAway = sum(last7, (d) => d.putAway);
@@ -137,7 +145,7 @@ export default function HistoryDashboard({ days, deltas }) {
         </div>
         <div className="stat-card">
           <div className="stat-label">Current % complete</div>
-          <div className="stat-value">{(latest.pct * 100).toFixed(1)}%</div>
+          <div className="stat-value">{latestWithPct ? `${(latestWithPct.pct * 100).toFixed(1)}%` : "—"}</div>
         </div>
         <div className="stat-card">
           <div className="stat-label">Days tracked</div>
@@ -186,9 +194,9 @@ export default function HistoryDashboard({ days, deltas }) {
                       <td className="col-qty qty-value" style={{ color: delta ? "#8fe3bb" : undefined }}>
                         {delta ? `+${delta.putAway.toLocaleString()}` : "—"}
                       </td>
-                      <td className="col-qty qty-value">{d.onRack.toLocaleString()}</td>
-                      <td className="col-qty qty-value">{d.queue.toLocaleString()}</td>
-                      <td className="col-pct">{(d.pct * 100).toFixed(1)}%</td>
+                      <td className="col-qty qty-value">{d.onRack !== null ? d.onRack.toLocaleString() : "—"}</td>
+                      <td className="col-qty qty-value">{d.queue !== null ? d.queue.toLocaleString() : "—"}</td>
+                      <td className="col-pct">{d.pct !== null ? `${(d.pct * 100).toFixed(1)}%` : "—"}</td>
                     </tr>
                     {isExpanded && (
                       <tr>
