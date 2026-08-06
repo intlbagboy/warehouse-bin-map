@@ -58,7 +58,11 @@ function computeMixedFlag(entries) {
 const STATUS_OPTIONS = [
   { key: "occupied", label: "Occupied", color: "#134e35" },
   { key: "review", label: "Needs review", color: "#5c4a12" },
-  { key: "blocked", label: "Blocked (beam)", color: "#34363d" },
+  {
+    key: "blocked",
+    label: "Blocked (beam)",
+    color: "repeating-linear-gradient(45deg, rgba(220,38,38,0.35) 0px, rgba(220,38,38,0.35) 4px, #2c2e34 4px, #2c2e34 9px)",
+  },
   { key: "empty", label: "Empty", color: "rgba(255,255,255,0.06)" },
 ];
 

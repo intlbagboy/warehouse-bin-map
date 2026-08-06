@@ -511,7 +511,14 @@ h1 {
   color: #ffdd8a;
 }
 .cell.blocked {
-  background: #34363d;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(220, 38, 38, 0.35) 0px,
+    rgba(220, 38, 38, 0.35) 4px,
+    #2c2e34 4px,
+    #2c2e34 9px
+  );
+  border-color: rgba(220, 38, 38, 0.4);
   color: #83848c;
   cursor: default;
 }
