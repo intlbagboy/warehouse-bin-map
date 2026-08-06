@@ -271,6 +271,24 @@ export default function BinMap({ data }) {
               </button>
             )}
           </div>
+          <select
+            className="search-input jump-to-aisle"
+            defaultValue=""
+            onChange={(e) => {
+              const code = e.target.value;
+              if (!code) return;
+              const el = document.querySelector(`[data-aisle-code="${code}"]`);
+              if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+              e.target.value = ""; // reset so picking the same aisle again still scrolls
+            }}
+          >
+            <option value="">Jump to aisle…</option>
+            {aisles.map((aisle) => (
+              <option key={aisle.code} value={aisle.code}>
+                Aisle {aisle.code}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="combo-row">
@@ -360,7 +378,7 @@ export default function BinMap({ data }) {
             : Array.from({ length: aisle.spots }, (_, i) => i + 1);
 
           return (
-            <div className="aisle-block" key={aisle.code}>
+            <div className="aisle-block" data-aisle-code={aisle.code} key={aisle.code}>
               <div className="aisle-title">
                 Aisle {aisle.code}
                 {aisle.flipped && <span className="aisle-flipped-tag">flipped</span>}

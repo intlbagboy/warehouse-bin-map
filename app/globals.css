@@ -524,6 +524,13 @@ h1 {
   align-items: center;
   gap: 8px;
   margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.jump-to-aisle {
+  max-width: 200px;
+  flex: 0 0 auto;
+  cursor: pointer;
 }
 
 .search-input-wrap {
