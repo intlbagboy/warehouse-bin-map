@@ -144,6 +144,62 @@ function SearchableSelect({ label, options, value, onChange }) {
   );
 }
 
+function AisleJumpSelect({ aisles }) {
+  const [open, setOpen] = useState(false);
+  const [text, setText] = useState("");
+  const ref = useRef(null);
+
+  useEffect(() => {
+    function onClickOutside(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, []);
+
+  const filtered = useMemo(() => {
+    const q = text.trim().toLowerCase();
+    if (!q) return aisles;
+    return aisles.filter((a) => a.code.toLowerCase().includes(q));
+  }, [text, aisles]);
+
+  function jumpTo(code) {
+    const el = document.querySelector(`[data-aisle-code="${code}"]`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    setOpen(false);
+    setText("");
+  }
+
+  return (
+    <div className="combo" ref={ref}>
+      <span className="combo-label">Jump to</span>
+      <div className="combo-input-wrap">
+        <input
+          type="text"
+          className="search-input"
+          placeholder="Jump to aisle…"
+          value={open ? text : ""}
+          onFocus={() => {
+            setOpen(true);
+            setText("");
+          }}
+          onChange={(e) => setText(e.target.value)}
+        />
+      </div>
+      {open && (
+        <div className="combo-list">
+          {filtered.length === 0 && <div className="combo-empty muted">No matches</div>}
+          {filtered.map((a) => (
+            <div key={a.code} className="combo-option" onClick={() => jumpTo(a.code)}>
+              Aisle {a.code}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function BinMap({ data }) {
   const searchParams = useSearchParams();
   const initialBin = searchParams.get("bin");
@@ -271,24 +327,7 @@ export default function BinMap({ data }) {
               </button>
             )}
           </div>
-          <select
-            className="search-input jump-to-aisle"
-            defaultValue=""
-            onChange={(e) => {
-              const code = e.target.value;
-              if (!code) return;
-              const el = document.querySelector(`[data-aisle-code="${code}"]`);
-              if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-              e.target.value = ""; // reset so picking the same aisle again still scrolls
-            }}
-          >
-            <option value="">Jump to aisle…</option>
-            {aisles.map((aisle) => (
-              <option key={aisle.code} value={aisle.code}>
-                Aisle {aisle.code}
-              </option>
-            ))}
-          </select>
+          <AisleJumpSelect aisles={aisles} />
         </div>
 
         <div className="combo-row">

@@ -527,12 +527,6 @@ h1 {
   flex-wrap: wrap;
 }
 
-.jump-to-aisle {
-  max-width: 200px;
-  flex: 0 0 auto;
-  cursor: pointer;
-}
-
 .search-input-wrap {
   position: relative;
   width: 100%;
