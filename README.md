@@ -160,3 +160,4 @@ scripts/export_data.py         Legacy: regenerated data/locations.json from Exce
 `npm audit` will flag a high-severity advisory in `sharp`, a dependency Next.js
 pulls in for its image optimizer. This app never uses `next/image`, so it isn't
 exploitable here — safe to ignore until an upstream fix lands.
+
