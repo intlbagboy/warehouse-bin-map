@@ -954,6 +954,10 @@ h1 {
   text-align: right;
 }
 
+.col-bin {
+  min-width: 90px;
+}
+
 .qty-value {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -967,6 +971,20 @@ h1 {
   padding: 3px 7px;
   border-radius: var(--radius-sm);
   color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.code-badge-link {
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 120ms ease, background 120ms ease;
+  border: 1px solid transparent;
+}
+
+.code-badge-link:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--ink);
 }
 
 .item-sku {

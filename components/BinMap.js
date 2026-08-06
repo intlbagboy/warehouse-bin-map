@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef, Fragment } from "react";
+import { useSearchParams } from "next/navigation";
 
 // Some sources (e.g. NetSuite's Display Name) export descriptions in ALL
 // CAPS, while others (e.g. the Transfer Log) use normal title case for the
@@ -144,11 +145,22 @@ function SearchableSelect({ label, options, value, onChange }) {
 }
 
 export default function BinMap({ data }) {
-  const [selected, setSelected] = useState(null);
+  const searchParams = useSearchParams();
+  const initialBin = searchParams.get("bin");
+  const [selected, setSelected] = useState(initialBin || null);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState(null);
   const [selectedDescription, setSelectedDescription] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
+
+  // Coming here via a "?bin=..." link (e.g. from the Mixed Styles/Colors
+  // tables) — scroll straight to that bin once, on first load.
+  useEffect(() => {
+    if (!initialBin) return;
+    const el = document.querySelector(`[data-code="${initialBin}"]`);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const locations = data.locations;
   const aisles = data.aisles;
@@ -388,6 +400,7 @@ export default function BinMap({ data }) {
                     return (
                       <div
                         key={code}
+                        data-code={code}
                         className={className}
                         onClick={() => cellLoc.status !== "blocked" && setSelected(code)}
                         title={titleParts.join(" — ")}

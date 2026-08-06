@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, Suspense } from "react";
 import { getWarehouseData } from "../lib/sheetData";
 import { getNetSuiteData } from "../lib/netsuiteData";
 import BinMap from "../components/BinMap";
@@ -31,7 +31,7 @@ function computeStats(data) {
   return { total, blocked, usable, occupied, review, empty };
 }
 
-function MixedTable({ title, subtitle, bins, color, brandColors }) {
+function MixedTable({ title, subtitle, bins, color, brandColors, source }) {
   if (!bins || bins.length === 0) return null;
   return (
     <div className="mixed-bins" style={{ borderColor: color }}>
@@ -42,7 +42,7 @@ function MixedTable({ title, subtitle, bins, color, brandColors }) {
       <table className="entry-table">
         <thead>
           <tr>
-            <th>Bin</th>
+            <th className="col-bin">Bin</th>
             <th>Brand</th>
             <th>Styles</th>
             <th>Colors</th>
@@ -52,8 +52,10 @@ function MixedTable({ title, subtitle, bins, color, brandColors }) {
         <tbody>
           {bins.map((b, i) => (
             <tr key={i}>
-              <td>
-                <span className="code-badge">{b.location}</span>
+              <td className="col-bin">
+                <a href={`/?source=${source}&tab=binmap&bin=${encodeURIComponent(b.location)}`} className="code-badge code-badge-link">
+                  {b.location}
+                </a>
               </td>
               <td>
                 {[...new Set(b.entries.map((e) => e.brand).filter(Boolean))].map((brand) => (
@@ -248,7 +250,11 @@ export default async function Home({ searchParams }) {
 
       <TabBar tabs={tabs} active={activeTab} source={source} />
 
-      {activeTab === "binmap" && <BinMap data={data} />}
+      {activeTab === "binmap" && (
+        <Suspense fallback={<div className="muted">Loading map…</div>}>
+          <BinMap data={data} />
+        </Suspense>
+      )}
 
       {activeTab === "mixedstyles" && (
         <MixedTable
@@ -257,6 +263,7 @@ export default async function Home({ searchParams }) {
           bins={mixedStyleBins}
           color="#c2410c"
           brandColors={data.brandColors}
+          source={source}
         />
       )}
 
@@ -267,6 +274,7 @@ export default async function Home({ searchParams }) {
           bins={mixedColorBins}
           color="#a16207"
           brandColors={data.brandColors}
+          source={source}
         />
       )}
 
