@@ -99,23 +99,6 @@ export default function DrillDown({ entries, source }) {
     };
   }, [binGroups, normalizedQuery]);
 
-  // Putaway-queue entries are colored by their own quantity relative to the
-  // other staged locations for this exact color — biggest remaining = reddest,
-  // smallest = greenest. There's no per-location "% already unloaded" in the
-  // NetSuite export (no ID links partial loads of the same pallet over time),
-  // so this is a relative-size signal, not a true progress percentage.
-  const queueRange = useMemo(() => {
-    if (binFiltered.queue.length === 0) return { min: 0, max: 0 };
-    const qtys = binFiltered.queue.map((b) => b.qty);
-    return { min: Math.min(...qtys), max: Math.max(...qtys) };
-  }, [binFiltered]);
-
-  function queueColor(qty) {
-    const { min, max } = queueRange;
-    if (max === min) return pctColor(0.5);
-    return pctColor(1 - (qty - min) / (max - min));
-  }
-
   function drillInto(name) {
     if (!canDrillDeeper) return;
     setPath([...path, name]);
@@ -260,11 +243,14 @@ export default function DrillDown({ entries, source }) {
               {binFiltered.queue.map((b) => (
                 <tr key={b.bin}>
                   <td className="col-bin">
-                    <span className="code-badge">{b.bin}</span>
+                    <a
+                      href={`/?source=${source}&tab=putaway&plate=${encodeURIComponent(b.bin)}`}
+                      className="code-badge code-badge-link"
+                    >
+                      {b.bin}
+                    </a>
                   </td>
-                  <td className="col-qty qty-value" style={{ color: queueColor(b.qty) }}>
-                    {b.qty.toLocaleString()}
-                  </td>
+                  <td className="col-qty qty-value">{b.qty.toLocaleString()}</td>
                 </tr>
               ))}
               {binFiltered.queue.length === 0 && (

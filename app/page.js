@@ -279,7 +279,9 @@ export default async function Home({ searchParams }) {
       )}
 
       {activeTab === "putaway" && source === "netsuite" && data.looseBins && data.looseBins.length > 0 && (
-        <PutawayQueue looseBins={data.looseBins} brandColors={data.brandColors} />
+        <Suspense fallback={<div className="muted">Loading putaway queue…</div>}>
+          <PutawayQueue looseBins={data.looseBins} brandColors={data.brandColors} />
+        </Suspense>
       )}
 
       {activeTab === "drilldown" && source === "netsuite" && data.drillDownEntries && data.drillDownEntries.length > 0 && (

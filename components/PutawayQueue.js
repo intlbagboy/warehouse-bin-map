@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 
 const DEFAULT_SHOWN = 60;
 
@@ -10,8 +11,10 @@ function entryMatches(entry, query) {
 }
 
 export default function PutawayQueue({ looseBins, brandColors }) {
-  const [query, setQuery] = useState("");
-  const [selected, setSelected] = useState(null);
+  const searchParams = useSearchParams();
+  const initialPlate = searchParams.get("plate");
+  const [query, setQuery] = useState(initialPlate || "");
+  const [selected, setSelected] = useState(initialPlate || null);
 
   const normalizedQuery = query.trim().toLowerCase();
   const searching = normalizedQuery.length > 0;
