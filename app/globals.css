@@ -521,7 +521,7 @@ h1 {
 
 .search-bar {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 8px;
   margin-bottom: 12px;
   flex-wrap: wrap;
