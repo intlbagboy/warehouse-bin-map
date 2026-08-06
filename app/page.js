@@ -283,7 +283,7 @@ export default async function Home({ searchParams }) {
       )}
 
       {activeTab === "drilldown" && source === "netsuite" && data.drillDownEntries && data.drillDownEntries.length > 0 && (
-        <DrillDown entries={data.drillDownEntries} />
+        <DrillDown entries={data.drillDownEntries} source={source} />
       )}
 
       {activeTab === "actions" && <ActionItemsTable data={data} />}

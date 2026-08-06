@@ -214,6 +214,13 @@ h1 {
   margin-bottom: 16px;
 }
 
+.drilldown-subheading {
+  font-weight: 600;
+  font-size: 13px;
+  margin: 18px 0 8px;
+  color: var(--ink-soft);
+}
+
 .col-pct {
   width: 170px;
 }
