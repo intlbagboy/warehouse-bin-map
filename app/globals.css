@@ -221,6 +221,33 @@ h1 {
   color: var(--ink-soft);
 }
 
+.trend-chart {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+}
+
+.trend-gridline {
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 1;
+}
+
+.trend-axis-label {
+  font-size: 10px;
+  fill: var(--muted);
+}
+
+.trend-line {
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+
+.trend-dot {
+  fill: var(--accent);
+  stroke: var(--surface-solid);
+  stroke-width: 1.5;
+}
+
 .col-pct {
   width: 170px;
 }

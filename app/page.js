@@ -6,6 +6,7 @@ import SourceToggle from "../components/SourceToggle";
 import TabBar from "../components/TabBar";
 import PutawayQueue from "../components/PutawayQueue";
 import DrillDown from "../components/DrillDown";
+import HistoryDashboard from "../components/HistoryDashboard";
 
 // Same red -> amber -> green interpolation as components/DrillDown.js,
 // intentionally duplicated rather than shared — see BinMap.js's note on why
@@ -177,6 +178,9 @@ export default async function Home({ searchParams }) {
   if (source === "netsuite" && data.drillDownEntries && data.drillDownEntries.length > 0) {
     tabs.push({ key: "drilldown", label: "Drill Down" });
   }
+  if (source === "netsuite") {
+    tabs.push({ key: "history", label: "History" });
+  }
   if (data.actionItems && data.actionItems.length > 0) {
     tabs.push({ key: "actions", label: `Action Items (${data.actionItems.length})` });
   }
@@ -286,6 +290,10 @@ export default async function Home({ searchParams }) {
 
       {activeTab === "drilldown" && source === "netsuite" && data.drillDownEntries && data.drillDownEntries.length > 0 && (
         <DrillDown entries={data.drillDownEntries} source={source} />
+      )}
+
+      {activeTab === "history" && source === "netsuite" && (
+        <HistoryDashboard days={data.history?.days || []} deltas={data.history?.deltas || []} />
       )}
 
       {activeTab === "actions" && <ActionItemsTable data={data} />}
