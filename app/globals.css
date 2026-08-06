@@ -54,9 +54,9 @@ body {
 }
 
 main {
-  max-width: 1200px;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 32px 24px;
+  padding: 32px 40px;
 }
 
 h1 {
@@ -463,35 +463,35 @@ h1 {
 
 .grid-row {
   display: flex;
-  gap: 3px;
-  margin-bottom: 3px;
+  gap: 4px;
+  margin-bottom: 4px;
 }
 
 .level-label {
-  width: 28px;
+  width: 34px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
+  font-size: 11px;
   color: var(--muted);
 }
 
 .spot-header {
-  width: 28px;
+  width: 34px;
   flex-shrink: 0;
   text-align: center;
-  font-size: 9px;
+  font-size: 10px;
   color: var(--muted);
 }
 
 .cell {
-  width: 28px;
-  height: 28px;
+  width: 34px;
+  height: 34px;
   flex-shrink: 0;
-  border-radius: 5px;
+  border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -534,7 +534,7 @@ h1 {
 
 .search-input {
   width: 100%;
-  max-width: 480px;
+  max-width: 560px;
   padding: 10px 36px 10px 14px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -615,9 +615,9 @@ h1 {
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 13px;
-  height: 13px;
-  border-bottom-right-radius: 4px;
+  width: 16px;
+  height: 16px;
+  border-bottom-right-radius: 5px;
   z-index: 3;
   pointer-events: none;
 }
@@ -669,13 +669,13 @@ h1 {
   position: absolute;
   top: 2px;
   right: 2px;
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   background: #fff;
   color: #b45309;
   border: 1.5px solid #b45309;
   border-radius: 50%;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
   line-height: 1;
   display: flex;
@@ -726,8 +726,8 @@ h1 {
 
 .combo {
   position: relative;
-  flex: 1 1 220px;
-  max-width: 320px;
+  flex: 1 1 260px;
+  max-width: 380px;
 }
 
 .combo-label {
