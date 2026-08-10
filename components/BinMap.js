@@ -209,9 +209,20 @@ export default function BinMap({ data }) {
   const initialBin = searchParams.get("bin");
   const [selected, setSelected] = useState(initialBin || null);
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState(null);
   const [selectedDescription, setSelectedDescription] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
+
+  // The input's displayed value updates instantly (typing never feels
+  // delayed), but the actual filtering — which scans every location — only
+  // recomputes once typing pauses for 300ms. Without this, typing on mobile
+  // felt like it was buffering, since every single keystroke triggered a
+  // full re-filter of the whole dataset.
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(query), 300);
+    return () => clearTimeout(timer);
+  }, [query]);
 
   // Coming here via a "?bin=..." link (e.g. from the Mixed Styles/Colors
   // tables) — scroll straight to that bin once, on first load.
@@ -222,6 +233,14 @@ export default function BinMap({ data }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    function onKeyDown(e) {
+      if (e.key === "Escape") setSelected(null);
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, []);
+
   const locations = data.locations;
   const aisles = data.aisles;
   const brandColors = data.brandColors || {};
@@ -230,7 +249,7 @@ export default function BinMap({ data }) {
   const loc = selected ? locations[selected] : null;
   const selectedRefs = selected ? referencedBins[selected] : null;
 
-  const normalizedQuery = query.trim().toLowerCase();
+  const normalizedQuery = debouncedQuery.trim().toLowerCase();
   const searching = normalizedQuery.length > 0;
 
   // Every distinct base description, and which colors actually occur for each one.
@@ -307,7 +326,7 @@ export default function BinMap({ data }) {
 
   const statusLabel = statusFilter ? STATUS_OPTIONS.find((s) => s.key === statusFilter)?.label : null;
   const filterParts = [];
-  if (searching) filterParts.push(`"${query}"`);
+  if (searching) filterParts.push(`"${debouncedQuery}"`);
   if (statusLabel) filterParts.push(statusLabel);
   if (selectedDescription) filterParts.push(selectedDescription);
   if (selectedColor) filterParts.push(selectedColor);
@@ -489,102 +508,100 @@ export default function BinMap({ data }) {
         })}
       </div>
 
-      <div className="map-side">
-        <div className="panel">
-          {!selected && (
-            <div className="panel-placeholder muted">Click a bin to see what&apos;s stored there.</div>
-          )}
+      {selected && (
+        <div className="bin-modal-backdrop" onClick={() => setSelected(null)}>
+          <div className="bin-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="bin-modal-close" onClick={() => setSelected(null)} aria-label="Close">
+              ×
+            </button>
 
-          {selected && (
-            <>
-              <div className="panel-header">
-                <span className="panel-label">Bin</span>
-                <span className="panel-code">{selected}</span>
+            <div className="panel-header">
+              <span className="panel-label">Bin</span>
+              <span className="panel-code">{selected}</span>
+            </div>
+
+            {loc && loc.mixed && (
+              <div
+                className="mixed-note"
+                style={{ borderLeftColor: computeMixedFlag(loc.entries).styleCount > 1 ? "#f97316" : "#eab308" }}
+              >
+                {(() => {
+                  const m = computeMixedFlag(loc.entries);
+                  const parts = [];
+                  if (m.styleCount > 1) parts.push(`${m.styleCount} styles`);
+                  if (m.colorCount > 1) parts.push(`${m.colorCount} colors`);
+                  return `Mixed contents — ${parts.join(", ")}`;
+                })()}
               </div>
+            )}
 
-              {loc && loc.mixed && (
-                <div
-                  className="mixed-note"
-                  style={{ borderLeftColor: computeMixedFlag(loc.entries).styleCount > 1 ? "#f97316" : "#eab308" }}
-                >
-                  {(() => {
-                    const m = computeMixedFlag(loc.entries);
-                    const parts = [];
-                    if (m.styleCount > 1) parts.push(`${m.styleCount} styles`);
-                    if (m.colorCount > 1) parts.push(`${m.colorCount} colors`);
-                    return `Mixed contents — ${parts.join(", ")}`;
-                  })()}
+            {!loc || loc.entries.length === 0 ? (
+              <div className="muted">Empty</div>
+            ) : (
+              loc.entries.map((e, i) => (
+                <div className="entry-card" key={i}>
+                  <div className="entry-card-top">
+                    {e.brand ? (
+                      <span className="brand-tag" style={{ background: brandColors[e.brand]?.color || "#999" }}>
+                        {e.brand}
+                      </span>
+                    ) : (
+                      <span />
+                    )}
+                    {e.verified ? (
+                      <span className="status-badge verified">Verified</span>
+                    ) : (
+                      <span className="status-badge needs-review">Needs review</span>
+                    )}
+                  </div>
+
+                  <div className="entry-field">
+                    <span className="field-label">License plate</span>
+                    <span className="code-badge">{e.licensePlate}</span>
+                  </div>
+
+                  <div className="entry-field">
+                    <span className="field-label">Item</span>
+                    <div className="item-sku">{e.sku}</div>
+                    <div className="item-desc">{e.description}</div>
+                  </div>
+
+                  <div className="entry-field">
+                    <span className="field-label">Qty</span>
+                    <span className="qty-value">{e.qty}</span>
+                  </div>
+
+                  {!e.verified && e.notes && <div className="action-note">Action: {e.notes}</div>}
                 </div>
-              )}
+              ))
+            )}
 
-              {!loc || loc.entries.length === 0 ? (
-                <div className="muted">Empty</div>
-              ) : (
-                loc.entries.map((e, i) => (
-                  <div className="entry-card" key={i}>
-                    <div className="entry-card-top">
-                      {e.brand ? (
-                        <span className="brand-tag" style={{ background: brandColors[e.brand]?.color || "#999" }}>
-                          {e.brand}
-                        </span>
-                      ) : (
-                        <span />
-                      )}
-                      {e.verified ? (
-                        <span className="status-badge verified">Verified</span>
-                      ) : (
-                        <span className="status-badge needs-review">Needs review</span>
-                      )}
+            {selectedRefs && selectedRefs.length > 0 && (
+              <div className="entry-card">
+                <div className="flag-callout-title">
+                  <span className="flag-badge">!</span> Mentioned in another bin&apos;s note
+                </div>
+                {selectedRefs.map((r, i) => (
+                  <div key={i} className="flag-callout">
+                    <div className="action-note">
+                      Note logged at <span className="code-badge">{r.fromLocation}</span>: {r.notes}
                     </div>
-
-                    <div className="entry-field">
-                      <span className="field-label">License plate</span>
-                      <span className="code-badge">{e.licensePlate}</span>
+                    <div className="entry-field" style={{ marginTop: 10 }}>
+                      <span className="field-label">Item mentioned</span>
+                      <div className="item-sku">{r.sku}</div>
+                      <div className="item-desc">{r.description}</div>
                     </div>
-
-                    <div className="entry-field">
-                      <span className="field-label">Item</span>
-                      <div className="item-sku">{e.sku}</div>
-                      <div className="item-desc">{e.description}</div>
-                    </div>
-
                     <div className="entry-field">
                       <span className="field-label">Qty</span>
-                      <span className="qty-value">{e.qty}</span>
+                      <span className="qty-value">{r.qty}</span>
                     </div>
-
-                    {!e.verified && e.notes && <div className="action-note">Action: {e.notes}</div>}
                   </div>
-                ))
-              )}
-
-              {selectedRefs && selectedRefs.length > 0 && (
-                <div className="entry-card">
-                  <div className="flag-callout-title">
-                    <span className="flag-badge">!</span> Mentioned in another bin&apos;s note
-                  </div>
-                  {selectedRefs.map((r, i) => (
-                    <div key={i} className="flag-callout">
-                      <div className="action-note">
-                        Note logged at <span className="code-badge">{r.fromLocation}</span>: {r.notes}
-                      </div>
-                      <div className="entry-field" style={{ marginTop: 10 }}>
-                        <span className="field-label">Item mentioned</span>
-                        <div className="item-sku">{r.sku}</div>
-                        <div className="item-desc">{r.description}</div>
-                      </div>
-                      <div className="entry-field">
-                        <span className="field-label">Qty</span>
-                        <span className="qty-value">{r.qty}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
