@@ -544,6 +544,7 @@ export default function BinMap({ data }) {
                   <span className="aisle-chevron">▸</span>
                   Aisle {aisle.code}
                   {aisle.flipped && <span className="aisle-flipped-tag">flipped</span>}
+                  {aisle.bulk && <span className="aisle-bulk-tag">Bulk storage</span>}
                   <span className="aisle-empty-tag">Empty aisle</span>
                 </button>
               </div>
@@ -566,12 +567,14 @@ export default function BinMap({ data }) {
                     <span className="aisle-chevron aisle-chevron-open">▾</span>
                     Aisle {aisle.code}
                     {aisle.flipped && <span className="aisle-flipped-tag">flipped</span>}
+                    {aisle.bulk && <span className="aisle-bulk-tag">Bulk storage</span>}
                     <span className="aisle-empty-tag">Empty aisle</span>
                   </button>
                 ) : (
                   <>
                     Aisle {aisle.code}
                     {aisle.flipped && <span className="aisle-flipped-tag">flipped</span>}
+                    {aisle.bulk && <span className="aisle-bulk-tag">Bulk storage</span>}
                   </>
                 )}
               </div>
@@ -587,7 +590,7 @@ export default function BinMap({ data }) {
 
               {Array.from({ length: aisle.levels }, (_, i) => aisle.levels - i).map((level) => (
                 <div className="grid-row" key={level}>
-                  <div className="level-label">L{level}</div>
+                  <div className="level-label">{aisle.bulk ? "" : `L${level}`}</div>
                   {spotOrder.map((spot) => {
                     const code = `${aisle.code}-${String(spot).padStart(2, "0")}-${level}`;
                     const cellLoc = locations[code] || { status: "empty", entries: [], qty: 0, brand: "" };
