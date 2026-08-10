@@ -211,8 +211,22 @@ export default function BinMap({ data }) {
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState(null);
-  const [selectedDescription, setSelectedDescription] = useState(null);
+  const [selectedBrand, setSelectedBrand] = useState(null);
+  const [selectedStyle, setSelectedStyle] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
+  // Aisles with zero inventory anywhere in them collapse to a slim header by
+  // default (see emptyAisleMap below) — this tracks ones the person has
+  // manually expanded (or re-collapsed) to override that default.
+  const [expandedEmptyAisles, setExpandedEmptyAisles] = useState(() => new Set());
+
+  function toggleEmptyAisle(code) {
+    setExpandedEmptyAisles((prev) => {
+      const next = new Set(prev);
+      if (next.has(code)) next.delete(code);
+      else next.add(code);
+      return next;
+    });
+  }
 
   // The input's displayed value updates instantly (typing never feels
   // delayed), but the actual filtering — which scans every location — only
@@ -252,43 +266,84 @@ export default function BinMap({ data }) {
   const normalizedQuery = debouncedQuery.trim().toLowerCase();
   const searching = normalizedQuery.length > 0;
 
-  // Every distinct base description, and which colors actually occur for each one.
-  const { descriptions, colorsByDescription, allColors } = useMemo(() => {
-    const descSet = new Set();
-    const colorMap = new Map();
+  // Every distinct style (the base name half of "Base Name - Color"), which
+  // brand(s) each style occurs under, and which colors occur for each
+  // style — broken down further by brand+style so the Brand filter can
+  // narrow Style and Color, and Style can narrow Color, in one direction.
+  const { allStyles, allColors, stylesByBrand, colorsByStyle, colorsByBrandStyle } = useMemo(() => {
+    const styleSet = new Set();
     const colorSet = new Set();
+    const brandStyleMap = new Map(); // brand -> Set(style)
+    const styleColorMap = new Map(); // style -> Set(color)
+    const brandStyleColorMap = new Map(); // "brand||style" -> Set(color)
     for (const l of Object.values(locations)) {
       for (const e of l.entries || []) {
         const { base, color } = splitDescription(e.description);
         if (!base) continue;
-        descSet.add(base);
+        styleSet.add(base);
+        if (e.brand) {
+          if (!brandStyleMap.has(e.brand)) brandStyleMap.set(e.brand, new Set());
+          brandStyleMap.get(e.brand).add(base);
+        }
         if (color) {
           colorSet.add(color);
-          if (!colorMap.has(base)) colorMap.set(base, new Set());
-          colorMap.get(base).add(color);
+          if (!styleColorMap.has(base)) styleColorMap.set(base, new Set());
+          styleColorMap.get(base).add(color);
+          if (e.brand) {
+            const key = `${e.brand}||${base}`;
+            if (!brandStyleColorMap.has(key)) brandStyleColorMap.set(key, new Set());
+            brandStyleColorMap.get(key).add(color);
+          }
         }
       }
     }
     return {
-      descriptions: [...descSet].sort(),
-      colorsByDescription: colorMap,
+      allStyles: [...styleSet].sort(),
       allColors: [...colorSet].sort(),
+      stylesByBrand: brandStyleMap,
+      colorsByStyle: styleColorMap,
+      colorsByBrandStyle: brandStyleColorMap,
     };
   }, [locations]);
 
-  const colorOptions = useMemo(() => {
-    if (!selectedDescription) return allColors;
-    return [...(colorsByDescription.get(selectedDescription) || new Set())].sort();
-  }, [selectedDescription, colorsByDescription, allColors]);
+  const styleOptions = useMemo(() => {
+    if (!selectedBrand) return allStyles;
+    return [...(stylesByBrand.get(selectedBrand) || new Set())].sort();
+  }, [selectedBrand, stylesByBrand, allStyles]);
 
-  // If switching descriptions makes the current color selection invalid, drop it.
+  const colorOptions = useMemo(() => {
+    if (selectedBrand && selectedStyle) {
+      return [...(colorsByBrandStyle.get(`${selectedBrand}||${selectedStyle}`) || new Set())].sort();
+    }
+    if (selectedStyle) {
+      return [...(colorsByStyle.get(selectedStyle) || new Set())].sort();
+    }
+    if (selectedBrand) {
+      const set = new Set();
+      for (const style of stylesByBrand.get(selectedBrand) || []) {
+        for (const c of colorsByStyle.get(style) || []) set.add(c);
+      }
+      return [...set].sort();
+    }
+    return allColors;
+  }, [selectedBrand, selectedStyle, colorsByBrandStyle, colorsByStyle, stylesByBrand, allColors]);
+
+  // If picking a brand makes the current style selection invalid, drop it.
+  useEffect(() => {
+    if (selectedStyle && !styleOptions.includes(selectedStyle)) {
+      setSelectedStyle(null);
+    }
+  }, [styleOptions, selectedStyle]);
+
+  // If switching brand/style makes the current color selection invalid, drop it.
   useEffect(() => {
     if (selectedColor && !colorOptions.includes(selectedColor)) {
       setSelectedColor(null);
     }
   }, [colorOptions, selectedColor]);
 
-  const filtering = searching || statusFilter !== null || selectedDescription !== null || selectedColor !== null;
+  const filtering =
+    searching || statusFilter !== null || selectedBrand !== null || selectedStyle !== null || selectedColor !== null;
 
   const matches = useMemo(() => {
     if (!filtering) return [];
@@ -301,13 +356,14 @@ export default function BinMap({ data }) {
           if (!cellLoc) continue;
           if (statusFilter && cellLoc.status !== statusFilter) continue;
 
-          const needsEntryCheck = searching || selectedDescription || selectedColor;
+          const needsEntryCheck = searching || selectedBrand || selectedStyle || selectedColor;
           if (needsEntryCheck) {
             const hasMatch = cellLoc.entries.some((e) => {
               if (searching && !entryMatchesText(e, normalizedQuery)) return false;
-              if (selectedDescription || selectedColor) {
+              if (selectedBrand && e.brand !== selectedBrand) return false;
+              if (selectedStyle || selectedColor) {
                 const { base, color } = splitDescription(e.description);
-                if (selectedDescription && base !== selectedDescription) return false;
+                if (selectedStyle && base !== selectedStyle) return false;
                 if (selectedColor && color !== selectedColor) return false;
               }
               return true;
@@ -320,15 +376,47 @@ export default function BinMap({ data }) {
       }
     }
     return found;
-  }, [normalizedQuery, searching, statusFilter, selectedDescription, selectedColor, filtering, aisles, locations]);
+  }, [normalizedQuery, searching, statusFilter, selectedBrand, selectedStyle, selectedColor, filtering, aisles, locations]);
 
   const matchSet = useMemo(() => new Set(matches), [matches]);
+
+  // Which aisles have at least one match — used to hide non-matching aisles
+  // entirely while a search/filter is active, so you don't have to scroll
+  // past irrelevant ones to reach the results.
+  const matchedAisleCodes = useMemo(() => {
+    if (!filtering) return null;
+    const set = new Set();
+    for (const code of matches) set.add(code.split("-")[0]);
+    return set;
+  }, [filtering, matches]);
+
+  // Aisles with no inventory anywhere in them (every spot/level is "empty")
+  // collapse to a slim header by default, independent of any active search.
+  const emptyAisleMap = useMemo(() => {
+    const map = {};
+    for (const aisle of aisles) {
+      let empty = true;
+      for (let level = 1; empty && level <= aisle.levels; level++) {
+        for (let spot = 1; spot <= aisle.spots; spot++) {
+          const code = `${aisle.code}-${String(spot).padStart(2, "0")}-${level}`;
+          const cellLoc = locations[code];
+          if (cellLoc && cellLoc.status !== "empty") {
+            empty = false;
+            break;
+          }
+        }
+      }
+      map[aisle.code] = empty;
+    }
+    return map;
+  }, [aisles, locations]);
 
   const statusLabel = statusFilter ? STATUS_OPTIONS.find((s) => s.key === statusFilter)?.label : null;
   const filterParts = [];
   if (searching) filterParts.push(`"${debouncedQuery}"`);
   if (statusLabel) filterParts.push(statusLabel);
-  if (selectedDescription) filterParts.push(selectedDescription);
+  if (selectedBrand) filterParts.push(selectedBrand);
+  if (selectedStyle) filterParts.push(selectedStyle);
   if (selectedColor) filterParts.push(selectedColor);
 
   return (
@@ -354,12 +442,8 @@ export default function BinMap({ data }) {
         </div>
 
         <div className="combo-row">
-          <SearchableSelect
-            label="Description"
-            options={descriptions}
-            value={selectedDescription}
-            onChange={setSelectedDescription}
-          />
+          <SearchableSelect label="Brand" options={brands} value={selectedBrand} onChange={setSelectedBrand} />
+          <SearchableSelect label="Style" options={styleOptions} value={selectedStyle} onChange={setSelectedStyle} />
           <SearchableSelect label="Color" options={colorOptions} value={selectedColor} onChange={setSelectedColor} />
         </div>
 
@@ -435,6 +519,34 @@ export default function BinMap({ data }) {
         </div>
 
         {aisles.map((aisle) => {
+          // A search/filter is active and this aisle has no matches — skip
+          // it entirely rather than making people scroll past it.
+          if (filtering && !matchedAisleCodes.has(aisle.code)) return null;
+
+          const isEmptyAisle = emptyAisleMap[aisle.code];
+          // Empty aisles collapse to a header by default; the person can
+          // expand one manually. That default is overridden entirely while
+          // a search/filter is active — an aisle only gets this far if it
+          // has matches, so it should render in full.
+          const collapsed = !filtering && isEmptyAisle && !expandedEmptyAisles.has(aisle.code);
+
+          if (collapsed) {
+            return (
+              <div className="aisle-block aisle-collapsed" data-aisle-code={aisle.code} key={aisle.code}>
+                <button
+                  type="button"
+                  className="aisle-title aisle-title-toggle"
+                  onClick={() => toggleEmptyAisle(aisle.code)}
+                >
+                  <span className="aisle-chevron">▸</span>
+                  Aisle {aisle.code}
+                  {aisle.flipped && <span className="aisle-flipped-tag">flipped</span>}
+                  <span className="aisle-empty-tag">Empty aisle</span>
+                </button>
+              </div>
+            );
+          }
+
           const spotOrder = aisle.flipped
             ? Array.from({ length: aisle.spots }, (_, i) => aisle.spots - i)
             : Array.from({ length: aisle.spots }, (_, i) => i + 1);
@@ -442,8 +554,23 @@ export default function BinMap({ data }) {
           return (
             <div className="aisle-block" data-aisle-code={aisle.code} key={aisle.code}>
               <div className="aisle-title">
-                Aisle {aisle.code}
-                {aisle.flipped && <span className="aisle-flipped-tag">flipped</span>}
+                {isEmptyAisle ? (
+                  <button
+                    type="button"
+                    className="aisle-title-toggle"
+                    onClick={() => toggleEmptyAisle(aisle.code)}
+                  >
+                    <span className="aisle-chevron aisle-chevron-open">▾</span>
+                    Aisle {aisle.code}
+                    {aisle.flipped && <span className="aisle-flipped-tag">flipped</span>}
+                    <span className="aisle-empty-tag">Empty aisle</span>
+                  </button>
+                ) : (
+                  <>
+                    Aisle {aisle.code}
+                    {aisle.flipped && <span className="aisle-flipped-tag">flipped</span>}
+                  </>
+                )}
               </div>
 
               <div className="grid-row">
