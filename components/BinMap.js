@@ -390,8 +390,11 @@ export default function BinMap({ data }) {
     return set;
   }, [filtering, matches]);
 
-  // Aisles with no inventory anywhere in them (every spot/level is "empty")
-  // collapse to a slim header by default, independent of any active search.
+  // Aisles with no real inventory anywhere in them collapse to a slim header
+  // by default, independent of any active search. "No real inventory" means
+  // every spot/level is either "empty" or "blocked" — a beam-blocked spot
+  // holds nothing either, so an aisle that's only blocked cells is just as
+  // empty in practice as one that's all blank.
   const emptyAisleMap = useMemo(() => {
     const map = {};
     for (const aisle of aisles) {
@@ -400,7 +403,7 @@ export default function BinMap({ data }) {
         for (let spot = 1; spot <= aisle.spots; spot++) {
           const code = `${aisle.code}-${String(spot).padStart(2, "0")}-${level}`;
           const cellLoc = locations[code];
-          if (cellLoc && cellLoc.status !== "empty") {
+          if (cellLoc && cellLoc.status !== "empty" && cellLoc.status !== "blocked") {
             empty = false;
             break;
           }
